@@ -1,3 +1,10 @@
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+Servers/
+
+webservice/build/
+
 # Compiled class file
 *.class
 
@@ -11,7 +18,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
