@@ -44,7 +44,7 @@ siteScratch -- this is the scratch website and JDBC implementation of sqlite
 
 To run:
 
-1. Configure Tomcat or your web container so that it can find sqlite-jdbc4-3.8.2-SNAPSHOT.jar
+1. Configure Tomcat or your web container so that it can find sqlite-jdbc-3.8.7.jar
 via JNI. This generally means copying it into the libs directory of the Tomcat install.
 
 2. Delete and re-create the Server so that the changes, above, are brought into the project.
