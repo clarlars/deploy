@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="webservice">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/androidcommon_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/services_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/androidlibrary_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/android_annotations_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/android_frameworks_aidl_gen"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/android_frameworks_minimal_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/android_dalvik_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/tables_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/androidlibrary_gen"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/services_gen"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/androidcommon_gen"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/survey_src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/services_mod"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/androidcommon_mod"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/androidlibrary_mod"/>
+        <wb-resource deploy-path="/WEB-INF/lib" source-path="/libs"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/tables_mod"/>
+        <property name="context-root" value="webservice"/>
+        <property name="java-output-path" value="/webservice/build/classes"/>
+    </wb-module>
+</project-modules>

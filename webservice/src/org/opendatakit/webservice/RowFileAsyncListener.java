@@ -1,0 +1,166 @@
+package org.opendatakit.webservice;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.catalina.connector.Response;
+import org.opendatakit.consts.CharsetConsts;
+import org.opendatakit.logging.WebLogger;
+import org.opendatakit.utilities.ODKFileUtils;
+
+public class RowFileAsyncListener implements AsyncListener {
+	private static final String TAG = "RowFileAsyncListener";
+	private static final Set<String> imageTypes;
+    private static final Set<String> videoTypes;
+    private static final Set<String> audioTypes;
+    
+    static {
+    	imageTypes = new HashSet<String>();
+        imageTypes.add("jpg");
+        imageTypes.add("jpeg");
+        imageTypes.add("gif");
+        imageTypes.add("png");
+        videoTypes = new HashSet<String>();
+        videoTypes.add("mpeg");
+        videoTypes.add("mpg");
+        videoTypes.add("wav");
+        videoTypes.add("wmv");
+        audioTypes = new HashSet<String>();
+        audioTypes.add("mp4");
+    }
+
+	  private final String appName;
+	  private final String appNameUrlPrefix;
+	  private final AsyncContext asyncContext;
+
+	  @Override
+	  public void onComplete(AsyncEvent arg0) throws IOException {
+	    // TODO Auto-generated method stub
+	    
+	  }
+
+	  @Override
+	  public void onError(AsyncEvent arg0) throws IOException {
+	    // TODO Auto-generated method stub
+	    
+	  }
+
+	  @Override
+	  public void onStartAsync(AsyncEvent arg0) throws IOException {
+	    // TODO Auto-generated method stub
+	    
+	  }
+
+	  @Override
+	  public void onTimeout(AsyncEvent arg0) throws IOException {
+
+	    HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
+	    try {
+	      String responseJSON ="{\"error\":\"Timed out\"}";
+	      response.setContentType("application/json");
+	      response.setCharacterEncoding("utf-8");
+	      response.getOutputStream().write(responseJSON.getBytes(CharsetConsts.UTF_8));
+	      response.setStatus(Response.SC_REQUEST_TIMEOUT);
+	    } catch (IOException e) {
+	      // TODO Auto-generated catch block
+	      e.printStackTrace();
+	    }
+	    asyncContext.complete();
+	  }
+	  
+	  RowFileAsyncListener(AsyncContext  asyncContext, String appName, String appNameUrlPrefixIn) {
+	    this.asyncContext = asyncContext;
+	    this.appName = appName;
+	    this.appNameUrlPrefix = appNameUrlPrefixIn;
+	    
+	    asyncContext.start(new Runnable() {
+
+			@Override
+			public void run() {
+				HttpServletRequest request = null;
+			    HttpServletResponse response = null;
+			    try {
+			      response = (HttpServletResponse) asyncContext.getResponse();
+			      request = (HttpServletRequest) asyncContext.getRequest();
+			    } catch ( Exception e ) {
+			      WebLogger.getLogger(appName).i(TAG,  "async context is no longer valid");
+			      return;
+			    }
+			    StringBuffer b = request.getRequestURL();
+			    
+			    String path = b.toString();
+			    String basePath = appNameUrlPrefix + appName + "/";
+			    if ( path.startsWith(basePath) ) {
+			    	path = path.substring(basePath.length());
+			    }
+			    
+			    File file = null;
+			    try {
+			    	file = ODKFileUtils.getAsFile(appName, path);
+			    } catch (Throwable t) {
+			    	WebLogger.getLogger(appName).e(TAG, "failed to identify file");
+			    	WebLogger.getLogger(appName).printStackTrace(t);
+			    }
+			    
+			    String name = null;
+			    String extension = null;
+			    if ( file != null ) {
+			      name = file.getName();
+			      int idx = name.lastIndexOf('.');
+			      extension = (idx != -1) ? name.substring(idx) : null;
+			    }
+			    
+			    try {
+			      if ( extension == null ) {
+				      response.setContentType("application/binary");
+			      } else if ( imageTypes.contains(extension) ) {
+				      response.setContentType("image/" + extension);
+			      } else if ( videoTypes.contains(extension) ) {
+				      response.setContentType("video/" + extension);
+			      } else if ( audioTypes.contains(extension) ) {
+				      response.setContentType("audio/" + extension);
+			      }
+			      ServletOutputStream out = response.getOutputStream();
+			      FileInputStream fin = new FileInputStream(file);
+			      BufferedInputStream in = new BufferedInputStream(fin);
+			      byte[] buffer = new byte[4096];
+			      int len;
+			      while ( (len = in.read(buffer)) != -1) {
+			    	  out.write(buffer, 0, len);
+			      }
+			      in.close();
+			      response.setStatus(Response.SC_OK);
+			    } catch (IOException e) {
+			      WebLogger.getLogger(appName).e(TAG, name);
+			      WebLogger.getLogger(appName).printStackTrace(e);
+			      try {
+			        response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
+			      } catch (IOException ex) {
+			        WebLogger.getLogger(appName).printStackTrace(ex);
+			      }
+			    }
+			    //complete the processing
+			    asyncContext.complete();
+			}});
+	  }
+
+	  public String getAppName() {
+	    return appName;
+	  }
+
+	  public String getActiveUser() {
+	    // TODO Auto-generated method stub
+	    return null;
+	  }
+}

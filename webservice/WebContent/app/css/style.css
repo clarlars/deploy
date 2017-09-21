@@ -1,0 +1,164 @@
+/* Custom Stylesheet */
+/* ODK specific */
+.topversion {
+	float: left;
+	font-size: 36px;
+	font-weight: bold;
+	text-align: right;
+	color: blue;
+}
+.fulliframearea {
+	width: inherit;
+	height: inherit;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+	overflow: inherit;
+}
+.fulltabarea {
+	width: inherit;
+	height: inherit;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+	overflow: visible;
+}
+.fullembedded {
+	width: inherit;
+	height: inherit;
+	overflow: visible;
+}
+.flowcancel {
+	padding-top: 12px;
+	float: none;
+	clear: both;
+}
+.flowcenter {
+	text-align: center;
+	margin: 0 auto;
+}
+.flowleft {
+	float: left;
+}
+.backdiv {
+	text-align: center;
+	margin-bottom: 10px;
+}
+.backbutton {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px 50px 10px 50px;
+}
+.reinitbutton {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px 50px 10px 50px;
+}
+.syncbutton {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px 50px 10px 50px;
+}
+.resetserverbutton {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px 50px 10px 50px;
+}
+.flowright {
+	float: right;
+	padding: 5px;
+}
+select {
+	font-size: 20px;
+}
+label {
+	font-size: 20px;
+}
+.pb {
+	font-size: 24px;
+	font-weight: bold;
+}
+.pbutton {
+	display: inline-block;
+	font-size: 24px;
+	font-weight: bold;
+	margin-top: 36px;
+	padding: 24px;
+}
+.resizeablescreen {
+	margin: 0 auto;
+	width: 480px;
+	height: 855px;
+	display: block;
+	background-color: white;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+.detailHalfscreen.vertical {
+	width: 100%;
+	height: 50%;
+}
+.sublistHalfscreen.vertical {
+	width: 100%;
+	height: 49%;
+}
+.detailHalfscreen.horizontal {
+	width: 50%;
+	height: 100%;
+}
+.sublistHalfscreen.horizontal {
+	width: 49%;
+	height: 100%;
+}
+.backviewport {
+	margin: 0 auto;
+	width: 95%;
+	height: 1000px;
+	display: block;
+	overflow: inherit;
+}
+
+.bigviewport {
+	width: 100%;
+	height: 97%;
+	display: block;
+	background-color: white;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+.themeviewport {
+	margin: 0 auto;
+	width: 100%;
+	height: 90%;
+	display: block;
+	background-color: white;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+/* tab control taken from http://www.onextrapixel.com/2013/07/31/creating-content-tabs-with-pure-css/ */
+.absolute {
+    position: absolute;
+	overflow: auto;
+	width: 100%;
+	height: 100%;
+}
+
+.content-tab {
+  width: 100%;
+  height: 1600px;
+  font-size: 20px;
+  padding-top: 10px;
+  background: lightgray;
+  padding: 15px;
+  color: white;
+  top: 53px;
+  left: 0;
+  box-sizing: border-box;
+  overflow: visible;
+}
