@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebServlet(urlPatterns = "/OdkIntentsHostIf", asyncSupported = false)
 public class OdkIntentsHostIf extends HttpServlet {
   private static final long serialVersionUID = 1L;
-  static final String TAG = "OdkTablesHostIf";
+  static final String TAG = "OdkIntentsHostIf";
 
   /**
    * @see HttpServlet#HttpServlet()
@@ -64,7 +64,7 @@ public class OdkIntentsHostIf extends HttpServlet {
     }
 
     String requestUrl = request.getRequestURL().toString();
-    int idx = requestUrl.indexOf("/OdkTablesHostIf");
+    int idx = requestUrl.indexOf("/OdkIntentsHostIf");
     String appNameUrlPrefix = requestUrl.substring(0, idx) + "/app/opendatakit/";
 
     String requestAction = (String) theRequest.get("action");
