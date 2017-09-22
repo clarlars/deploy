@@ -1,4 +1,4 @@
-package org.opendatakit.webservice;
+package org.opendatakit.webservice.rest.fileio;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -19,8 +19,8 @@ import org.opendatakit.consts.CharsetConsts;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.utilities.ODKFileUtils;
 
-public class ContentFileAsyncListener implements AsyncListener {
-  private static final String TAG = "ContentFileAsyncListener";
+public class RowFileAsyncListener implements AsyncListener {
+  private static final String TAG = "RowFileAsyncListener";
   private static final Set<String> textTypes;
   private static final Set<String> imageTypes;
   private static final Set<String> videoTypes;
@@ -89,7 +89,7 @@ public class ContentFileAsyncListener implements AsyncListener {
     asyncContext.complete();
   }
 
-  ContentFileAsyncListener(AsyncContext asyncContext, String appName, String appNameUrlPrefixIn) {
+  RowFileAsyncListener(AsyncContext asyncContext, String appName, String appNameUrlPrefixIn) {
     this.asyncContext = asyncContext;
     this.appName = appName;
     this.appNameUrlPrefix = appNameUrlPrefixIn;
@@ -128,7 +128,7 @@ public class ContentFileAsyncListener implements AsyncListener {
         if (file != null) {
           name = file.getName();
           int idx = name.lastIndexOf('.');
-          extension = (idx != -1) ? name.substring(idx+1) : null;
+          extension = (idx != -1) ? name.substring(idx + 1) : null;
         }
 
         try {

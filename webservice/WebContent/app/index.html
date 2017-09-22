@@ -635,7 +635,7 @@ function getLanguageName (languageCode) {
 	}
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/webservice/OdkTablesHostIf', true);
+	xhr.open('POST', '/webservice/OdkIntentsHostIf', true);
 	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Content-Type','application/json;charset=utf-8');
@@ -650,7 +650,7 @@ function getLanguageName (languageCode) {
   function setSubListView(action, intent, contentLocation) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/webservice/OdkTablesHostIf', true);
+	xhr.open('POST', '/webservice/OdkIntentsHostIf', true);
 	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Content-Type','application/json;charset=utf-8');
@@ -788,6 +788,40 @@ function getLanguageName (languageCode) {
 		// treat this as a cancel
 		odkCloseWindowAction(0, {});
   }
+  function cleanbutton() {
+    // abort all nested windows
+	while (pageStack.length > 0) {
+		// cancel this window
+		odkCloseWindowAction(0, {});
+	}
+	// clear the top-level window
+	var parent = document.getElementById('blandviewport');
+	parent.innerHTML = "Scorching the Earth ...";
+    $('#blandviewport').waitMe({
+            effect: 'roundBounce',
+            text: 'Scorching the Earth ...',
+            bg: 'rgba(255,255,255,0.7)',
+            color:'#000',
+            sizeW:'',
+            sizeH:''
+        });
+
+	// resolve filename - asynchronous
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/webservice/OdkClean', true);
+	xhr.responseType = 'text';
+	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
+	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
+	xhr.onload = function() {
+		// TODO: handle errors
+		var responseStruct = JSON.parse(this.responseText);
+        var parent = document.getElementById('blandviewport');
+	    parent.innerHTML = "";
+        $('#blandviewport').waitMe('hide');
+		initialLoadPage();
+	};
+	xhr.send();
+  }
   function reinitbutton() {
     // abort all nested windows
 	while (pageStack.length > 0) {
@@ -914,6 +948,7 @@ function getLanguageName (languageCode) {
     </div>
 	<div class="backdiv">
 	  <button class="backbutton" name="backbutton" id="backbutton" onclick="backbutton()" type="button">Back Button</button>
+	  <button class="cleanbutton" name="cleanbutton" id="cleanbutton" onclick="cleanbutton()" type="button">Clean Slate</button>
 	  <button class="reinitbutton" name="reinitbutton" id="reinitbutton" onclick="reinitbutton()" type="button">Re-Initialize</button>
 	  <button class="syncbutton" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button>
 	  <button class="resetserverbutton" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button>

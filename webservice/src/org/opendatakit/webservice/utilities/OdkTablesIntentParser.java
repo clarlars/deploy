@@ -1,4 +1,4 @@
-package org.opendatakit.webservice;
+package org.opendatakit.webservice.utilities;
 
 import java.io.File;
 import java.util.Collections;
@@ -24,26 +24,35 @@ import org.opendatakit.views.ViewDataQueryParams;
 
 import android.content.Context;
 
+/**
+ * Attempt to interpret an intent description as a tables intent, and return the
+ * url that should be loaded by the webpage in response.
+ * 
+ * @author mitchellsundt@gmail.com
+ *
+ */
 public class OdkTablesIntentParser {
-  
+
   private static final String QUERY_START_PARAM = "?";
 
   private final String mAppNameUrlPrefix;
   private PropertiesSingleton mProps;
-  
+
   public OdkTablesIntentParser(String thisAppName, String appNameUrlPrefix) {
     Context context = new Context();
     mAppNameUrlPrefix = appNameUrlPrefix;
     mProps = CommonToolProperties.get(context, thisAppName);
   }
+
   /**
    * Return the file name from the bundle. Convenience method for calling
    * {@link Bundle#getString(String)} with
    * {@link Constants.IntentKeys#FILE_NAME}.
+   * 
    * @param bundle
    * @return the file name, null if it does not exist or if bundle is null
    */
-  public static String retrieveFileNameFromBundle(Map<String,Object>  bundle) {
+  public static String retrieveFileNameFromBundle(Map<String, Object> bundle) {
     if (bundle == null) {
       return null;
     }
@@ -53,18 +62,17 @@ public class OdkTablesIntentParser {
 
   private String[] checkForQueryParameter(File webFile) {
     String webFileToDisplayPath = webFile.getPath();
-    String [] webFileStrs = webFileToDisplayPath.split("[" + QUERY_START_PARAM + "]", 2);
+    String[] webFileStrs = webFileToDisplayPath.split("[" + QUERY_START_PARAM + "]", 2);
     return webFileStrs;
   }
 
   /**
-   * Retrieve the app-relative file name from either the 
-   * saved instance state or the {@link Intent} that was
-   * used to create the activity.
+   * Retrieve the app-relative file name from either the saved instance state or
+   * the {@link Intent} that was used to create the activity.
    * 
-   * If none supplied, then return the default home screen
-   * if we are configured to show it. If we are configured
-   * to show it and it is not present, clear that flag.
+   * If none supplied, then return the default home screen if we are configured
+   * to show it. If we are configured to show it and it is not present, clear
+   * that flag.
    * 
    * @return
    */
@@ -73,26 +81,26 @@ public class OdkTablesIntentParser {
     String relativeFileName = retrieveFileNameFromBundle(extras);
 
     File userHomeScreen = null;
-    if ( relativeFileName != null ) {
+    if (relativeFileName != null) {
       userHomeScreen = ODKFileUtils.asAppFile(appName, relativeFileName);
     } else {
       userHomeScreen = new File(ODKFileUtils.getTablesHomeScreenFile(appName));
     }
 
     // Make sure that query parameters are still passed through
-    String [] userHomeScreenUrlParts = checkForQueryParameter(userHomeScreen);
+    String[] userHomeScreenUrlParts = checkForQueryParameter(userHomeScreen);
     File userHomeScreenFile = userHomeScreen;
     if (userHomeScreenUrlParts.length > 1) {
       userHomeScreenFile = new File(userHomeScreenUrlParts[0]);
     }
 
-    if ((relativeFileName != null) ||
-        (setting == null ? false : setting) ||
-        (userHomeScreenFile.exists() && userHomeScreenFile.isFile())) {
+    if ((relativeFileName != null) || (setting == null ? false : setting)
+        || (userHomeScreenFile.exists() && userHomeScreenFile.isFile())) {
       return userHomeScreen;
     } else {
-      if ( (setting == null || setting == Boolean.TRUE) && relativeFileName == null ) {
-        // the home screen doesn't exist but we are requesting to show it -- clear the setting
+      if ((setting == null || setting == Boolean.TRUE) && relativeFileName == null) {
+        // the home screen doesn't exist but we are requesting to show it --
+        // clear the setting
         mProps.setProperties(Collections.singletonMap(CommonToolProperties.KEY_USE_HOME_SCREEN,
             Boolean.toString(false)));
       }
@@ -102,7 +110,7 @@ public class OdkTablesIntentParser {
 
   public String getUrlBaseLocation(String thisAppName, File webFileToDisplay) {
     // Split off query parameter if it exists
-    String [] webFileStrs = checkForQueryParameter(webFileToDisplay);
+    String[] webFileStrs = checkForQueryParameter(webFileToDisplay);
     String filename = null;
     if (webFileStrs.length > 1) {
       File webFile = new File(webFileStrs[0]);
@@ -111,7 +119,7 @@ public class OdkTablesIntentParser {
       filename = ODKFileUtils.asUriFragment(thisAppName, webFileToDisplay);
     }
 
-    if ( filename != null ) {
+    if (filename != null) {
       if (webFileStrs.length > 1) {
         return filename.concat(QUERY_START_PARAM).concat(webFileStrs[1]);
       } else {
@@ -121,16 +129,17 @@ public class OdkTablesIntentParser {
     return null;
   }
 
-  public Map<String,Object> getMainActivityUrl(String thisAppName, String action, Map<String, Object> intent) {
-    if ( !action.equals("org.opendatakit.tables.activities.MainActivity") ) {
+  public Map<String, Object> getMainActivityUrl(String thisAppName, String action,
+      Map<String, Object> intent) {
+    if (!action.equals("org.opendatakit.tables.activities.MainActivity")) {
       return null;
     }
-    
+
     File webFileToDisplay = getHomeScreen(thisAppName, (Map<String, Object>) intent.get("extras"));
-    if ( webFileToDisplay != null ) {
+    if (webFileToDisplay != null) {
       String url = getUrlBaseLocation(thisAppName, webFileToDisplay);
 
-      Map<String,Object> retVal = new HashMap<String,Object>();
+      Map<String, Object> retVal = new HashMap<String, Object>();
       retVal.put("tool", "tables");
       retVal.put("url", mAppNameUrlPrefix + mProps.getAppName() + "/" + url);
       retVal.put("appName", thisAppName);
@@ -138,9 +147,10 @@ public class OdkTablesIntentParser {
     }
     return null;
   }
-  
+
   /**
    * Retrieve the table id from the intent. Returns null if not present.
+   * 
    * @return
    */
   String retrieveTableIdFromIntent(Map<String, Object> intent) {
@@ -148,19 +158,19 @@ public class OdkTablesIntentParser {
     return (String) extras.get(IntentConsts.INTENT_KEY_TABLE_ID);
   }
 
+  private ViewDataQueryParams readQueryFromIntent(Map<String, Object> intent) {
+    Map<String, Object> extras = (Map<String, Object>) intent.get("extras");
 
-  private ViewDataQueryParams readQueryFromIntent(Map<String,Object> intent) {
-    Map<String,Object> extras = (Map<String,Object>) intent.get("extras");
-
-    ViewDataQueryParams queryParams = ViewDataQueryParamsHelper.readQueryFromIntentExtrasSubset(extras);
+    ViewDataQueryParams queryParams = ViewDataQueryParamsHelper
+        .readQueryFromIntentExtrasSubset(extras);
     return queryParams;
   }
 
   private String getDefaultFileNameForViewFragmentType(ViewFragmentType fragmentType) {
-    if ( mPossibleTableViewTypes == null || fragmentType == null ) {
+    if (mPossibleTableViewTypes == null || fragmentType == null) {
       return null;
     }
-    switch ( fragmentType ) {
+    switch (fragmentType) {
     case SPREADSHEET:
       return null;
     case LIST:
@@ -171,7 +181,8 @@ public class OdkTablesIntentParser {
       return mPossibleTableViewTypes.getDefaultDetailFileName();
     case DETAIL_WITH_LIST:
     case SUB_LIST:
-      return null; // TODO: For now there is no default detail with list. Do we need one?
+      return null; // TODO: For now there is no default detail with list. Do we
+                   // need one?
     default:
       return null;
     }
@@ -186,14 +197,15 @@ public class OdkTablesIntentParser {
   /** Cached data from database */
   private PossibleTableViewTypes mPossibleTableViewTypes = null;
 
-  private void possiblySupplyDefaults(String thisAppName, UserDbInterface dbInterface, String tableId) throws ServicesAvailabilityException {
+  private void possiblySupplyDefaults(String thisAppName, UserDbInterface dbInterface,
+      String tableId) throws ServicesAvailabilityException {
 
-    if ( mPossibleTableViewTypes == null ) {
+    if (mPossibleTableViewTypes == null) {
       DbHandle db = null;
       try {
         db = dbInterface.openDatabase(thisAppName);
-        OrderedColumns columnDefinitions
-          = dbInterface.getUserDefinedColumns(thisAppName, db, tableId);
+        OrderedColumns columnDefinitions = dbInterface.getUserDefinedColumns(thisAppName, db,
+            tableId);
 
         mPossibleTableViewTypes = new PossibleTableViewTypes(dbInterface, thisAppName, db, tableId,
             columnDefinitions);
@@ -219,16 +231,16 @@ public class OdkTablesIntentParser {
       original = ViewFragmentType.SPREADSHEET;
     }
 
-    if (mOriginalFileName == null ) {
+    if (mOriginalFileName == null) {
       mOriginalFileName = getDefaultFileNameForViewFragmentType(mOriginalFragmentType);
     }
 
-    if ( mCurrentFragmentType == null ) {
+    if (mCurrentFragmentType == null) {
       mCurrentFragmentType = original;
       mCurrentFileName = mOriginalFileName;
     }
 
-    if ( mCurrentFileName == null ) {
+    if (mCurrentFileName == null) {
       mCurrentFileName = getDefaultFileNameForViewFragmentType(mCurrentFragmentType);
     }
 
@@ -247,31 +259,31 @@ public class OdkTablesIntentParser {
     } else {
       filename = mCurrentFileName;
     }
-    if ( filename != null ) {
+    if (filename != null) {
       // we need to escape the segments.
       String pathPart;
       String queryPart;
       String hashPart;
       int idxQ = filename.indexOf("?");
       int idxH = filename.indexOf("#");
-      if ( idxQ != -1 ) {
-        if ( idxH != -1 ) {
-          if ( idxH < idxQ ) {
-            pathPart = filename.substring(0,idxH);
+      if (idxQ != -1) {
+        if (idxH != -1) {
+          if (idxH < idxQ) {
+            pathPart = filename.substring(0, idxH);
             queryPart = "";
             hashPart = filename.substring(idxH);
           } else {
-            pathPart = filename.substring(0,idxQ);
+            pathPart = filename.substring(0, idxQ);
             queryPart = filename.substring(idxQ, idxH);
             hashPart = filename.substring(idxH);
           }
         } else {
-          pathPart = filename.substring(0,idxQ);
+          pathPart = filename.substring(0, idxQ);
           queryPart = filename.substring(idxQ);
           hashPart = "";
         }
-      } else if ( idxH != -1 ) {
-        pathPart = filename.substring(0,idxH);
+      } else if (idxH != -1) {
+        pathPart = filename.substring(0, idxH);
         queryPart = "";
         hashPart = filename.substring(idxH);
       } else {
@@ -279,54 +291,57 @@ public class OdkTablesIntentParser {
         queryPart = "";
         hashPart = "";
       }
-        
-      String webFragment = ODKFileUtils.asUriFragment(thisAppName, 
+
+      String webFragment = ODKFileUtils.asUriFragment(thisAppName,
           new File(ODKFileUtils.getAppFolder(thisAppName), pathPart));
       // unclear what escaping is needed on query and hash parts...
       return webFragment + queryPart + hashPart;
     }
     return null;
   }
-  
-  public Map<String,Object> getTableActivityUrl(String thisAppName, String action, Map<String, Object> intent) {
-    if ( !action.equals("org.opendatakit.tables.activities.TableDisplayActivity") ) {
+
+  public Map<String, Object> getTableActivityUrl(String thisAppName, String action,
+      Map<String, Object> intent) {
+    if (!action.equals("org.opendatakit.tables.activities.TableDisplayActivity")) {
       return null;
     }
-    Map<String,Object> extras = (Map<String,Object>) intent.get("extras");
-    
+    Map<String, Object> extras = (Map<String, Object>) intent.get("extras");
+
     String mTableId = retrieveTableIdFromIntent(intent);
     if (mTableId == null) {
       return null;
     }
-    
+
     ODKFileUtils.assertDirectoryStructure(thisAppName);
     AndroidConnectFactory.configure();
     Context context = new Context();
     UserDbInterface dbInterface = new UserDbInterfaceImpl(new OdkDatabaseServiceImpl(context));
 
     /*
-     * If we are restoring from a saved state, the fleshed-out original view type and filename
-     * will be in the savedInstance bundle. Otherwise, we will need to extract it from the Intent.
+     * If we are restoring from a saved state, the fleshed-out original view
+     * type and filename will be in the savedInstance bundle. Otherwise, we will
+     * need to extract it from the Intent.
      *
-     * Once they are extracted, the original values may be fleshed out from the database and
-     * configuration settings. The fleshed-out values will be stored in the savedInstanceState
-     * so that recovery can proceed more quickly
+     * Once they are extracted, the original values may be fleshed out from the
+     * database and configuration settings. The fleshed-out values will be
+     * stored in the savedInstanceState so that recovery can proceed more
+     * quickly
      */
 
-    if ( mOriginalFragmentType == null ) {
+    if (mOriginalFragmentType == null) {
       // get the information from the Intent
-      String viewType = (extras != null && extras.containsKey(Constants.IntentKeys.TABLE_DISPLAY_VIEW_TYPE)) ?
-          ((String) extras.get(Constants.IntentKeys.TABLE_DISPLAY_VIEW_TYPE)) :
-          null;
+      String viewType = (extras != null
+          && extras.containsKey(Constants.IntentKeys.TABLE_DISPLAY_VIEW_TYPE))
+              ? ((String) extras.get(Constants.IntentKeys.TABLE_DISPLAY_VIEW_TYPE)) : null;
 
       if (viewType != null) {
         mOriginalFragmentType = ViewFragmentType.valueOf(viewType);
       }
     }
-    if ( mOriginalFileName == null ) {
+    if (mOriginalFileName == null) {
       // get the information from the Intent
-      mOriginalFileName = (extras != null && extras.containsKey(Constants.IntentKeys.FILE_NAME)) ?
-          ((String) extras.get(Constants.IntentKeys.FILE_NAME)) : null;
+      mOriginalFileName = (extras != null && extras.containsKey(Constants.IntentKeys.FILE_NAME))
+          ? ((String) extras.get(Constants.IntentKeys.FILE_NAME)) : null;
     }
 
     ViewDataQueryParams queryParams = readQueryFromIntent(intent);
@@ -359,7 +374,7 @@ public class OdkTablesIntentParser {
       break;
     case MAP:
       throw new IllegalArgumentException("Unsupported display (MAP)");
-      // TODO:   protected int mSelectedItemIndex;
+      // TODO: protected int mSelectedItemIndex;
       // baseUrl = getUrlBaseLocation(thisAppName, false, null);
       // break;
     default:
@@ -367,7 +382,7 @@ public class OdkTablesIntentParser {
       // break;
     }
 
-    Map<String,Object> retVal = new HashMap<String,Object>();
+    Map<String, Object> retVal = new HashMap<String, Object>();
     retVal.put("tool", "tables");
     retVal.put("url", mAppNameUrlPrefix + mProps.getAppName() + "/" + baseUrl);
     retVal.put("tableDisplayViewType", mCurrentFragmentType.name());

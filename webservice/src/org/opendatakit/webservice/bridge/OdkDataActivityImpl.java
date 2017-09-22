@@ -1,4 +1,4 @@
-package org.opendatakit.webservice;
+package org.opendatakit.webservice.bridge;
 
 import java.io.IOException;
 
@@ -24,12 +24,21 @@ import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.views.ExecutorContext;
 import org.opendatakit.views.ExecutorProcessor;
 import org.opendatakit.views.ViewDataQueryParams;
+import org.opendatakit.webservice.configuration.OdkTool;
 
 import android.content.Context;
 import android.os.Bundle;
 
-class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, AsyncListener {
-
+/**
+ * Class that bridges the gulf between the Android activity and its management
+ * of the ExecutorContext and the management of that context in the website.
+ * 
+ * @author mitchellsundt@gmail.com
+ *
+ */
+public class OdkDataActivityImpl
+    implements IOdkAsyncDataActivity, IOdkTablesActivity, AsyncListener {
+  private static final String TAG = "OdkDataActivityImpl";
   final OdkTool tool;
   String appName = "default";
   final ViewDataQueryParams params;
@@ -41,19 +50,19 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   @Override
   public void onComplete(AsyncEvent arg0) throws IOException {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void onError(AsyncEvent arg0) throws IOException {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void onStartAsync(AsyncEvent arg0) throws IOException {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
@@ -61,7 +70,7 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
 
     HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
     try {
-      String responseJSON ="{\"error\":\"Timed out\"}";
+      String responseJSON = "{\"error\":\"Timed out\"}";
       response.setContentType("application/json");
       response.setCharacterEncoding("utf-8");
       response.getOutputStream().write(responseJSON.getBytes(CharsetConsts.UTF_8));
@@ -72,8 +81,8 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
     }
     asyncContext.complete();
   }
-  
-  OdkDataActivityImpl(AsyncContext  asyncContext, OdkTool tool, ViewDataQueryParams params) {
+
+  public OdkDataActivityImpl(AsyncContext asyncContext, OdkTool tool, ViewDataQueryParams params) {
     this.asyncContext = asyncContext;
     this.tool = tool;
     this.params = params;
@@ -84,23 +93,23 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
 
   @Override
   public void signalResponseAvailable(String responseJSON, String fragmentID) {
-    WebLogger.getLogger(appName).i(OdkDataHostIf.TAG,  responseJSON);
-    
+    WebLogger.getLogger(appName).i(TAG, responseJSON);
+
     HttpServletResponse response = null;
     try {
       response = (HttpServletResponse) asyncContext.getResponse();
-    } catch ( Exception e ) {
-      WebLogger.getLogger(appName).i(OdkDataHostIf.TAG,  "async context is no longer valid");
+    } catch (Exception e) {
+      WebLogger.getLogger(appName).i(TAG, "async context is no longer valid");
       return;
     }
-    
+
     try {
       response.setContentType("application/json");
       response.setCharacterEncoding("utf-8");
       response.getOutputStream().write(responseJSON.getBytes(CharsetConsts.UTF_8));
       response.setStatus(Response.SC_OK);
     } catch (IOException e) {
-      WebLogger.getLogger(appName).e(OdkDataHostIf.TAG,  responseJSON);
+      WebLogger.getLogger(appName).e(TAG, responseJSON);
       WebLogger.getLogger(appName).printStackTrace(e);
       try {
         response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
@@ -108,7 +117,7 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
         WebLogger.getLogger(appName).printStackTrace(ex);
       }
     }
-    //complete the processing
+    // complete the processing
     asyncContext.complete();
   }
 
@@ -117,15 +126,15 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
     // TODO Auto-generated method stub
     return null;
   }
-  
+
   public void start(ExecutorProcessor work) {
     asyncContext.start(work);
     // getExecutorContextWorker().execute(work);
   }
-  
+
   @Override
   public ExecutorProcessor newExecutorProcessor(ExecutorContext context) {
-    if ( tool == OdkTool.SURVEY ) {
+    if (tool == OdkTool.SURVEY) {
       return new SurveyDataExecutorProcessor(context);
     } else {
       return new TableDataExecutorProcessor(context, this);
@@ -133,9 +142,8 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   }
 
   @Override
-  public void registerDatabaseConnectionBackgroundListener(
-      DatabaseConnectionListener listener) {
-    this.listener = listener; 
+  public void registerDatabaseConnectionBackgroundListener(DatabaseConnectionListener listener) {
+    this.listener = listener;
   }
 
   @Override
@@ -191,7 +199,7 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   @Override
   public void setSessionVariable(String elementPath, String jsonValue) {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
@@ -210,13 +218,13 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   @Override
   public void queueActionOutcome(String outcome) {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void queueUrlChange(String hash) {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
@@ -228,7 +236,7 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   @Override
   public void removeFirstQueuedAction() {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
@@ -245,7 +253,7 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   @Override
   public void initializationCompleted() {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
@@ -258,5 +266,5 @@ class OdkDataActivityImpl implements IOdkAsyncDataActivity, IOdkTablesActivity, 
   public Integer getIndexOfSelectedItem() {
     // TODO Auto-generated method stub
     return null;
-  }      
+  }
 }

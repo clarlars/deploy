@@ -1,4 +1,4 @@
-package org.opendatakit.webservice;
+package org.opendatakit.webservice.utilities;
 
 import java.util.List;
 import java.util.Map;
@@ -8,6 +8,12 @@ import org.opendatakit.database.queries.BindArgs;
 import org.opendatakit.tables.utils.Constants;
 import org.opendatakit.views.ViewDataQueryParams;
 
+/**
+ * Construct a ViewDataQueryParams struct from a JSON request body.
+ *  
+ * @author mitchellsundt@gmail.com
+ *
+ */
 public class ViewDataQueryParamsHelper {
 
   public static ViewDataQueryParams readQueryFromIntentExtrasSubset(Map<String,Object> extrasSubset) {
