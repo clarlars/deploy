@@ -104,7 +104,7 @@ public class ReInitializeAsyncListener implements AsyncListener {
 
 			      // replicate the server's configuration in the scratch area
 			      File webContentDir = new File(asyncContext.getRequest().getServletContext()
-			    		  .getRealPath("/app/" + appName));
+			    		  .getRealPath("/META-INF/clean"));
 			      
 			      try {
   			        file.mkdirs();

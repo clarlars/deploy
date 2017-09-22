@@ -33,8 +33,8 @@ public class RowFileServlet extends HttpServlet {
      AsyncContext asyncCtx = request.startAsync();
      
      String requestUrl = request.getRequestURL().toString();
-     int idx = requestUrl.indexOf("/app/");
-     String appNameUrlPrefix = requestUrl.substring(0,idx) + "/app/"; 
+     int idx = requestUrl.indexOf("/app/opendatakit/");
+     String appNameUrlPrefix = requestUrl.substring(0,idx) + "/app/opendatakit/"; 
 
      RowFileAsyncListener action = new RowFileAsyncListener(asyncCtx, appName, appNameUrlPrefix);
 
