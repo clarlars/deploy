@@ -18,6 +18,7 @@ import org.apache.catalina.connector.Response;
 import org.opendatakit.consts.CharsetConsts;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 public class RowFileAsyncListener implements AsyncListener {
   private static final String TAG = "RowFileAsyncListener";
@@ -50,7 +51,6 @@ public class RowFileAsyncListener implements AsyncListener {
     audioTypes.add("mp4");
   }
 
-  private final String appName;
   private final String appNameUrlPrefix;
   private final AsyncContext asyncContext;
 
@@ -89,24 +89,29 @@ public class RowFileAsyncListener implements AsyncListener {
     asyncContext.complete();
   }
 
-  RowFileAsyncListener(AsyncContext asyncContext, String appName, String appNameUrlPrefixIn) {
+  RowFileAsyncListener(AsyncContext asyncContext, String appNameUrlPrefixIn) {
     this.asyncContext = asyncContext;
-    this.appName = appName;
     this.appNameUrlPrefix = appNameUrlPrefixIn;
 
     asyncContext.start(new Runnable() {
 
       @Override
       public void run() {
+        OdkUserContext odkUserContext = null;
+        String theAppName = null;
         HttpServletRequest request = null;
         HttpServletResponse response = null;
         try {
+          odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
+          theAppName = odkUserContext.getAppName();
           response = (HttpServletResponse) asyncContext.getResponse();
           request = (HttpServletRequest) asyncContext.getRequest();
         } catch (Exception e) {
-          WebLogger.getLogger(appName).i(TAG, "async context is no longer valid");
+          WebLogger.getLogger(theAppName).i(TAG, "async context is no longer valid");
           return;
         }
+        final String appName = theAppName;
+
         StringBuffer b = request.getRequestURL();
 
         String path = b.toString();
@@ -170,14 +175,5 @@ public class RowFileAsyncListener implements AsyncListener {
         asyncContext.complete();
       }
     });
-  }
-
-  public String getAppName() {
-    return appName;
-  }
-
-  public String getActiveUser() {
-    // TODO Auto-generated method stub
-    return null;
   }
 }

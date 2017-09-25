@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.webservice.configuration.OdkUserContext;
+
 /**
  * Retrieve the files under the config tree of this user. The config files are
  * under the /app/opendatakit/* path whereas the data files are under the
@@ -24,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 public class ContentFileServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   static final String TAG = "ContentFileServlet";
-  String appName = "default";
 
   /**
    * @see HttpServlet#HttpServlet()
@@ -41,13 +42,15 @@ public class ContentFileServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext.establishOdkUserContext(request);
+
     AsyncContext asyncCtx = request.startAsync();
 
     String requestUrl = request.getRequestURL().toString();
     int idx = requestUrl.indexOf("/app/opendatakit/");
     String appNameUrlPrefix = requestUrl.substring(0, idx) + "/app/opendatakit/";
 
-    ContentFileAsyncListener action = new ContentFileAsyncListener(asyncCtx, appName,
+    ContentFileAsyncListener action = new ContentFileAsyncListener(asyncCtx,
         appNameUrlPrefix);
 
     asyncCtx.addListener(action);

@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.webservice.configuration.OdkUserContext;
+
 /**
  * Retrieve the files under the data tree of this user. The data files are under
  * the /scratch/* space, rather than under the static configuration's
@@ -24,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 public class RowFileServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   static final String TAG = "RowFileServlet";
-  String appName = "default";
 
   /**
    * @see HttpServlet#HttpServlet()
@@ -41,13 +42,15 @@ public class RowFileServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext.establishOdkUserContext(request);
+
     AsyncContext asyncCtx = request.startAsync();
 
     String requestUrl = request.getRequestURL().toString();
     int idx = requestUrl.indexOf("/app/opendatakit/");
     String appNameUrlPrefix = requestUrl.substring(0, idx) + "/app/opendatakit/";
 
-    RowFileAsyncListener action = new RowFileAsyncListener(asyncCtx, appName, appNameUrlPrefix);
+    RowFileAsyncListener action = new RowFileAsyncListener(asyncCtx, appNameUrlPrefix);
 
     asyncCtx.addListener(action);
     asyncCtx.setTimeout(90000L);

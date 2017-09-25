@@ -473,6 +473,8 @@ var isoLanguageNames = {
 	zu: "Zulu" 
 };
 
+var odkCommonProperties = {};
+
 function getCountryName (countryCode) {
     if (isoCountries.hasOwnProperty(countryCode)) {
         return isoCountries[countryCode];
@@ -593,14 +595,26 @@ function getLanguageName (languageCode) {
 	return result;
   }
   function getAppName() {
-    return 'default';
+    return odkCommonProperties.appName;
   }
   function getActiveUser() {
-	return 'anonymous';
-	// active-user-property(mailto:eaddr or username:uname)';
+	return odkCommonProperties.activeUser;
+  }
+  function getServerUrl() {
+    return odkCommonProperties.serverUrl;
   }
   function getProperty(propertyName) {
-	return 'property-of(' + propertyName + ')';
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/OdkCommonHostIf/property/' + propertyName, false);  // `false` makes the request synchronous
+	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
+	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
+	xhr.send(null);
+
+	var propertyValue = null;
+	if (xhr.status === 200) {
+		propertyValue = JSON.parse(xhr.responseText);
+	}
+	return propertyValue;
   }
   function getSessionVariables() {
     var ps = document.getElementById('previewscreen');
@@ -636,7 +650,6 @@ function getLanguageName (languageCode) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/webservice/OdkIntentsHostIf', true);
-	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Content-Type','application/json;charset=utf-8');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
@@ -651,7 +664,6 @@ function getLanguageName (languageCode) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/webservice/OdkIntentsHostIf', true);
-	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Content-Type','application/json;charset=utf-8');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
@@ -763,7 +775,40 @@ function getLanguageName (languageCode) {
 			cw.location.reload(false);
 		}
   }
+  function updateUserInformation() {
+      $('#blandviewport').waitMe({
+            effect: 'roundBounce',
+            text: 'Updating user information ...',
+            bg: 'rgba(255,255,255,0.7)',
+            color:'#000',
+            sizeW:'',
+            sizeH:''
+        });
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '/OdkCommonHostIf/common', false);  // `false` makes the request synchronous
+		xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
+		xhr.setRequestHeader('Accept','application/json;charset=utf-8');
+		xhr.send(null);
+
+		if (xhr.status === 200) {
+			odkCommonProperties = JSON.parse(xhr.responseText);
+		} else {
+			odkCommonProperties = {
+				appName: "default",
+				activeUser: "anonymous",
+				rolesList: "",
+				defaultGroup: "",
+				usersList: "",
+				serverUrl: "https://opendatakit-tablesdemo.appspot.com"	};
+		}
+		$('#blandviewport').waitMe('hide');
+  }	
   function initialLoadPage() {
+		updateUserInformation();
+		$("#cfgserverurl").html(getServerUrl());
+		$("#cfgappname").html(getAppName());
+		$("#cfgactiveuser").html(getActiveUser());
         var parent = document.getElementById('blandviewport');
 		var newIframe = document.createElement('iframe');
 		newIframe.className = 'resizeablescreen';
@@ -809,7 +854,39 @@ function getLanguageName (languageCode) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/webservice/OdkClean', true);
-	xhr.responseType = 'text';
+	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
+	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
+	xhr.onload = function() {
+		// TODO: handle errors
+		var responseStruct = JSON.parse(this.responseText);
+        var parent = document.getElementById('blandviewport');
+	    parent.innerHTML = "";
+        $('#blandviewport').waitMe('hide');
+		initialLoadPage();
+	};
+	xhr.send();
+  }
+  function samplesbutton() {
+    // abort all nested windows
+	while (pageStack.length > 0) {
+		// cancel this window
+		odkCloseWindowAction(0, {});
+	}
+	// clear the top-level window
+	var parent = document.getElementById('blandviewport');
+	parent.innerHTML = "Overwriting with Application Samples ...";
+    $('#blandviewport').waitMe({
+            effect: 'roundBounce',
+            text: 'Overwriting with Application Samples ...',
+            bg: 'rgba(255,255,255,0.7)',
+            color:'#000',
+            sizeW:'',
+            sizeH:''
+        });
+
+	// resolve filename - asynchronous
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/webservice/OdkSamples', true);
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
 	xhr.onload = function() {
@@ -843,7 +920,6 @@ function getLanguageName (languageCode) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/webservice/OdkReInitialize', true);
-	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
 	xhr.onload = function() {
@@ -877,7 +953,6 @@ function getLanguageName (languageCode) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/webservice/OdkSyncFromAppServer', true);
-	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
 	xhr.onload = function() {
@@ -911,7 +986,6 @@ function getLanguageName (languageCode) {
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/webservice/OdkResetAppServer', true);
-	xhr.responseType = 'text';
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
 	xhr.onload = function() {
@@ -948,17 +1022,32 @@ function getLanguageName (languageCode) {
     </div>
 	<div class="backdiv">
 	  <button class="backbutton" name="backbutton" id="backbutton" onclick="backbutton()" type="button">Back Button</button>
-	  <button class="cleanbutton" name="cleanbutton" id="cleanbutton" onclick="cleanbutton()" type="button">Clean Slate</button>
-	  <button class="reinitbutton" name="reinitbutton" id="reinitbutton" onclick="reinitbutton()" type="button">Re-Initialize</button>
-	  <button class="syncbutton" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button>
-	  <button class="resetserverbutton" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button>
+	  
 	</div>
 	</div>
 	<br>
+	</div>
+	<div class="flowleft">
+	<table>
+	  <tr><td><button class="reinitbutton" name="reinitbutton" id="reinitbutton" onclick="reinitbutton()" type="button">Re-Initialize</button></td></tr>
+	  <tr><td><hr>Destructive Actions:</td></tr>
+	  <tr><td><button class="cleanbutton" name="cleanbutton" id="cleanbutton" onclick="cleanbutton()" type="button">Clean Slate</button></td></tr>
+	  <tr><td><button class="samplesbutton" name="samplesbutton" id="samplesbutton" onclick="samplesbutton()" type="button">Application Samples</button></td></tr>
+	  <tr><td><hr><table class="configtext">
+	  <tr><td>Server Url:</td></tr>
+	  <tr><td class="configtextbold" id="cfgserverurl">blank</td></tr>
+	  <tr><td>Application Name:</td></tr> 
+	  <tr><td class="configtextbold" id="cfgappname">blank</td></tr>
+	  <tr><td>Active User:</td></tr>
+	  <tr><td class="configtextbold" id="cfgactiveuser">blank</td></tr>
+	  </table><hr></td></tr>
+	  <tr><td><button class="syncbutton" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button></td></tr>
+	  <tr><td><button class="resetserverbutton" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button></td></tr>
+	</table>  
+	</div>
 	<div class="flowcenter">
 	  <div class="fulliframearea" id="blandviewport">
 	  </div>
-	</div>
   </div>
   <script type="text/javascript">
     $(initialLoadPage);

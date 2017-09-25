@@ -51,25 +51,44 @@
 	font-weight: bold;
 	padding: 10px 50px 10px 50px;
 }
-.cleanbutton {
-	font-size: 20px;
-	font-weight: bold;
-	padding: 10px 50px 10px 50px;
-}
 .reinitbutton {
 	font-size: 20px;
 	font-weight: bold;
+    width: 100%;
+	padding: 10px 50px 10px 50px;
+}
+.cleanbutton {
+	font-size: 20px;
+	font-weight: bold;
+    width: 100%;
+	padding: 10px 50px 10px 50px;
+}
+.samplesbutton {
+	font-size: 20px;
+	font-weight: bold;
+    width: 100%;
 	padding: 10px 50px 10px 50px;
 }
 .syncbutton {
 	font-size: 20px;
 	font-weight: bold;
+    width: 100%;
 	padding: 10px 50px 10px 50px;
 }
 .resetserverbutton {
 	font-size: 20px;
 	font-weight: bold;
+    width: 100%;
 	padding: 10px 50px 10px 50px;
+}
+.configtext {
+	font-family: helvetica;
+	font-size: 12px;
+}
+.configtextbold {
+	font-family: helvetica;
+	font-weight: bold;
+	font-size: 11px;
 }
 .flowright {
 	float: right;
