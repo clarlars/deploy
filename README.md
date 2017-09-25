@@ -8,28 +8,67 @@ webservice is an Eclipse project defining a Servlet 3.0 application.
 The general structure is:
 
 webservice/androidlibrary_src  -- identical copy of files from Android project
-webservice/androidlibrary_gen  -- simplification of R object etc. from Android project
+webservice/androidlibrary_gen  -- simplification of (generated) R object etc. from Android project
 webservice/androidlibrary_mod  -- classes modified specifically for webservice
 
 webservice/androidcommon_src  -- identical copy of files from Android project
-webservice/androidcommon_gen  -- simplification of R object etc. from Android project
+webservice/androidcommon_gen  -- simplification of (generated) R object etc. from Android project
 webservice/androidcommon_mod  -- classes modified specifically for webservice
 
 webservice/services_src  -- identical copy of files from Android project
-webservice/services_gen  -- simplification of R object etc. from Android project
+webservice/services_gen  -- simplification of (generated) R object etc. from Android project
 webservice/services_mod  -- classes modified specifically for webservice
 
 webservice/survey_src  -- identical copy of files from Android project
 
 webservice/tables_src  -- identical copy of files from Android project
+webservice/tables_mod  -- classes modified specifically for webservice
 
 webservice/src -- code specific to webservice that is not in Android
 
-webservice/android_annotations_src -- files from Android open source project
-webservice/android_dalvik_src -- files from Android open source project
-webservice/android_frameworks_minimal_src -- files from Android open source project
-webservice/android_frameworks_aidl_gen -- files from Android open source project
+webservice/android_sdk_android_MNC_src -- files from Android open source project
+	This is source code from the android_sdk for MNC. Under $ANDROID_SDK/sources/android-MNC/
 
+webservice/android_sdk_android_15_src -- files from Android open source project
+     This is source code from the android_sdk for API 15. Under $ANDROID_SDK/sources/android-15/
+	 Newer versions use reflection. Kept at 15 to avoid that.
+
+webservice/android_sdk_23_mod -- modified files from Android open source project
+     This is source code from the android_sdk for API 23. Under $ANDROID_SDK/sources/android-23/
+	 Provides color constant definitions. Transform methods removed to reduce dependencies.
+	 
+webservice/platform_tools_base_annotations_src -- files from Android open source project
+     From this repo: 
+		git clone https://android.googlesource.com/platform/tools/base
+		git checkout master -- as of September 25, 2017
+		located under annotations/src/main/java/com/android/annotations
+	 
+webservice/platform_frameworks_base_core_src -- files from Android open source project
+	 From this repo:
+		git clone https://android.googlesource.com/platform/frameworks/base/
+		git checkout master -- as of September 25, 2017
+		located under core/java
+
+webservice/platform_frameworks_base_core_mod -- modified files from Android open source project
+	 These generally have sections of the file stripped out.
+	 From this repo:
+		git clone https://android.googlesource.com/platform/frameworks/base/
+		git checkout master -- as of September 25, 2017
+		located under core/java
+
+webservice/platform_frameworks_base_core_gen -- 
+	 Java for AIDL interfaces. Not sure where I found the generated source files.
+	 AIDL is from this repo:
+		git clone https://android.googlesource.com/platform/frameworks/base/
+		git checkout master -- as of September 25, 2017
+		located under core/java
+
+webservice/platform_libcore_luni_mod -- files from Android open source project
+	 These are slightly modified to reduce dependencies.
+        git clone https://android.googlesource.com/platform/libcore
+		git checkout master -- as of September 25, 2017
+		located under luni/src/main/java
+		
 webservice/libs -- libraries webservice needs
 
 webservice/WebContent -- content from app-designer, modified for operation within webservice context
@@ -37,7 +76,7 @@ webservice/WebContent -- content from app-designer, modified for operation withi
 			   this version of these files to replace the content in nodejs-based app-designer.
 
 
-sqlite-jdbc4-3.8.2-SNAPSHOT.jar -- JAR for sqlite database 
+sqlite-jdbc-3.8.7jar -- JAR for sqlite database 
                using JDBC -- https://bitbucket.org/xerial/sqlite-jdbc
 
 siteScratch -- this is the scratch website and JDBC implementation of sqlite
