@@ -783,6 +783,26 @@ function getLanguageName (languageCode) {
 		var cw = sizeIframe();
 		newIframe.src = _computeBaseOpendatakitPath() + getAppName() + "/config/assets/index.html";
   }
+  function launchXLSXConverter() {
+      var parent = document.getElementById('blandviewport');
+		var newIframe = document.createElement('iframe');
+		newIframe.className = 'resizeablescreen';
+		newIframe.setAttribute('name', 'screen');
+		newIframe.id = 'previewscreen';
+		// synthesize
+		newIframe.odkIntent = { extras: { filename: "config/assets/index.html" } };
+		newIframe.odkParserStruct = { tool: "tables", url: _computeBaseOpendatakitPath() + getAppName() + "/config/assets/index.html", appName: getAppName() };
+		newIframe.odkSubListStruct = {};
+		//
+		newIframe.odkSessionVariables = {};
+		newIframe.odkQueuedActions = [];
+		newIframe.odkSurveyStateMgmt = {};
+		newIframe.odkDispatchStruct = null;
+		newIframe.odkAction = null;
+		parent.appendChild(newIframe);
+		var cw = sizeIframe();
+		newIframe.src = _computeBaseOpendatakitPath() + getAppName() + "/config/assets/index.html";
+}
   function backbutton() {
         // TODO: allow implementation to catch and confirm exit (e.g., survey)
 		// treat this as a cancel
@@ -952,7 +972,18 @@ function getLanguageName (languageCode) {
 	  <button class="reinitbutton" name="reinitbutton" id="reinitbutton" onclick="reinitbutton()" type="button">Re-Initialize</button>
 	  <button class="syncbutton" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button>
 	  <button class="resetserverbutton" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button>
+	  <button class="xlsxConverterButton" name="xlsxConverter" id="xlsxConverterButton" onclick="launchXLSXConverter()" type="button">XLSX Converter</button>
 	</div>
+    <li>
+      <input type="radio" name="tabs" id="tab3"/><label for="tab3">XLSX Converter</label>
+	  <iframe class="content-tab" src="devEnv/tab3.html" frameborder="0" ></iframe>
+      </div>
+    </li>
+    <li>
+      <input type="radio" name="tabs" id="tab4"/><label for="tab4">File Browser</label>
+	  <iframe class="content-tab" src="devEnv/tab4.html" frameborder="0" ></iframe>
+      </div>
+    </li>
 	</div>
 	<br>
 	<div class="flowcenter">
