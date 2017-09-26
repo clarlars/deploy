@@ -207,7 +207,8 @@ function postFormDef() {
 
       if (tableId === util.getFrameworkFormId()) {
         // a special case for the framework file, which is reserved.
-        path = util.getRelativePathToFrameworkFormDef(formDefJson);
+        var frameworkPath = util.getRelativePathToFrameworkFormDef(formDefJson);
+        path = webServicePathToAppend + frameworkPath;
       } else {
         // we're dealing with a formdef that we're assuming must be for a
         // particular table, if we're going to be saving it automatically.
