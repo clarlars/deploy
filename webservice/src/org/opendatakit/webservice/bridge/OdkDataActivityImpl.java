@@ -17,6 +17,7 @@ import org.opendatakit.listener.DatabaseConnectionListener;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.services.database.AndroidConnectFactory;
 import org.opendatakit.services.database.service.OdkDatabaseServiceImpl;
+import org.opendatakit.services.utilities.ODKServicesPropertyUtils;
 import org.opendatakit.survey.logic.SurveyDataExecutorProcessor;
 import org.opendatakit.tables.activities.IOdkTablesActivity;
 import org.opendatakit.tables.views.webkits.TableDataExecutorProcessor;
@@ -25,6 +26,7 @@ import org.opendatakit.views.ExecutorContext;
 import org.opendatakit.views.ExecutorProcessor;
 import org.opendatakit.views.ViewDataQueryParams;
 import org.opendatakit.webservice.configuration.OdkTool;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -40,9 +42,8 @@ public class OdkDataActivityImpl
     implements IOdkAsyncDataActivity, IOdkTablesActivity, AsyncListener {
   private static final String TAG = "OdkDataActivityImpl";
   final OdkTool tool;
-  String appName = "default";
+  final OdkUserContext odkUserContext;
   final ViewDataQueryParams params;
-  Context context = new Context();
   UserDbInterface impl;
   DatabaseConnectionListener listener = null;
   AsyncContext asyncContext = null;
@@ -84,22 +85,23 @@ public class OdkDataActivityImpl
 
   public OdkDataActivityImpl(AsyncContext asyncContext, OdkTool tool, ViewDataQueryParams params) {
     this.asyncContext = asyncContext;
+    this.odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
     this.tool = tool;
     this.params = params;
-    ODKFileUtils.assertDirectoryStructure(appName);
+    ODKFileUtils.assertDirectoryStructure(odkUserContext.getAppName());
     AndroidConnectFactory.configure();
-    impl = new UserDbInterfaceImpl(new OdkDatabaseServiceImpl(context));
+    impl = new UserDbInterfaceImpl(new OdkDatabaseServiceImpl(odkUserContext.getContext()));
   }
 
   @Override
   public void signalResponseAvailable(String responseJSON, String fragmentID) {
-    WebLogger.getLogger(appName).i(TAG, responseJSON);
+    WebLogger.getLogger(odkUserContext.getAppName()).i(TAG, responseJSON);
 
     HttpServletResponse response = null;
     try {
       response = (HttpServletResponse) asyncContext.getResponse();
     } catch (Exception e) {
-      WebLogger.getLogger(appName).i(TAG, "async context is no longer valid");
+      WebLogger.getLogger(odkUserContext.getAppName()).i(TAG, "async context is no longer valid");
       return;
     }
 
@@ -109,12 +111,12 @@ public class OdkDataActivityImpl
       response.getOutputStream().write(responseJSON.getBytes(CharsetConsts.UTF_8));
       response.setStatus(Response.SC_OK);
     } catch (IOException e) {
-      WebLogger.getLogger(appName).e(TAG, responseJSON);
-      WebLogger.getLogger(appName).printStackTrace(e);
+      WebLogger.getLogger(odkUserContext.getAppName()).e(TAG, responseJSON);
+      WebLogger.getLogger(odkUserContext.getAppName()).printStackTrace(e);
       try {
         response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
       } catch (IOException ex) {
-        WebLogger.getLogger(appName).printStackTrace(ex);
+        WebLogger.getLogger(odkUserContext.getAppName()).printStackTrace(ex);
       }
     }
     // complete the processing
@@ -153,7 +155,7 @@ public class OdkDataActivityImpl
 
   @Override
   public String getAppName() {
-    return appName;
+    return odkUserContext.getAppName();
   }
 
   @Override
@@ -169,7 +171,7 @@ public class OdkDataActivityImpl
   @Override
   public String getActiveUser() {
     // TODO Auto-generated method stub
-    return null;
+    return ODKServicesPropertyUtils.getActiveUser(odkUserContext.getPropertiesSingleton());
   }
 
   @Override
@@ -186,8 +188,7 @@ public class OdkDataActivityImpl
 
   @Override
   public String getProperty(String propertyId) {
-    // TODO Auto-generated method stub
-    return null;
+    return odkUserContext.getPropertiesSingleton().getProperty(propertyId);
   }
 
   @Override
@@ -247,7 +248,7 @@ public class OdkDataActivityImpl
 
   @Override
   public Context getApplicationContext() {
-    return context;
+    return odkUserContext.getContext();
   }
 
   @Override

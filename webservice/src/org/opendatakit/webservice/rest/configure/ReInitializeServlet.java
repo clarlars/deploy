@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.webservice.configuration.OdkUserContext;
+
 /**
  * Rest API to direct the server to destroy the data tree within the scratch
  * space for this session and recreate it by running the initialization logic.
@@ -20,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 public class ReInitializeServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   static final String TAG = "ReInitializeServlet";
-  String appName = "default";
 
   /**
    * @see HttpServlet#HttpServlet()
@@ -37,9 +38,11 @@ public class ReInitializeServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext.establishOdkUserContext(request);
+
     AsyncContext asyncCtx = request.startAsync();
 
-    ReInitializeAsyncListener action = new ReInitializeAsyncListener(asyncCtx, appName);
+    ReInitializeAsyncListener action = new ReInitializeAsyncListener(asyncCtx);
 
     asyncCtx.addListener(action);
     asyncCtx.setTimeout(240000L);

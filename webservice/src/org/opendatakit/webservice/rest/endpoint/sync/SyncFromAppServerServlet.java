@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.webservice.configuration.OdkUserContext;
+
 /**
  * Performs a sync to the cloud endpoint.
  * 
@@ -19,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 public class SyncFromAppServerServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   static final String TAG = "SyncFromAppServerServlet";
-  String appName = "default";
 
   /**
    * @see HttpServlet#HttpServlet()
@@ -35,9 +36,11 @@ public class SyncFromAppServerServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext.establishOdkUserContext(request);
+
     AsyncContext asyncCtx = request.startAsync();
 
-    SyncFromAppServerAsyncListener action = new SyncFromAppServerAsyncListener(asyncCtx, appName);
+    SyncFromAppServerAsyncListener action = new SyncFromAppServerAsyncListener(asyncCtx);
 
     asyncCtx.addListener(action);
     asyncCtx.setTimeout(240000L);

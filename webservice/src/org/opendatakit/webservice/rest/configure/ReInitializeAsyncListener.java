@@ -21,13 +21,13 @@ import org.opendatakit.logging.WebLogger;
 import org.opendatakit.services.database.AndroidConnectFactory;
 import org.opendatakit.services.database.service.OdkDatabaseServiceImpl;
 import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import android.content.Context;
 
 public class ReInitializeAsyncListener implements AsyncListener {
   private static final String TAG = "ReInitializeAsyncListener";
 
-  private final String appName;
   private final AsyncContext asyncContext;
 
   @Override
@@ -65,23 +65,27 @@ public class ReInitializeAsyncListener implements AsyncListener {
     asyncContext.complete();
   }
 
-  ReInitializeAsyncListener(AsyncContext asyncContext, String appName) {
+  ReInitializeAsyncListener(AsyncContext asyncContext) {
     this.asyncContext = asyncContext;
-    this.appName = appName;
 
     asyncContext.start(new Runnable() {
 
       @Override
       public void run() {
+        OdkUserContext odkUserContext = null;
+        String theAppName = null;
         HttpServletRequest request = null;
         HttpServletResponse response = null;
         try {
+          odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
+          theAppName = odkUserContext.getAppName();
           response = (HttpServletResponse) asyncContext.getResponse();
           request = (HttpServletRequest) asyncContext.getRequest();
         } catch (Exception e) {
-          WebLogger.getLogger(appName).i(TAG, "async context is no longer valid");
+          WebLogger.getLogger(theAppName).i(TAG, "async context is no longer valid");
           return;
         }
+        final String appName = theAppName;
 
         // we don't need any info on the request.
         // just destroy and re-create the content of the
@@ -106,7 +110,7 @@ public class ReInitializeAsyncListener implements AsyncListener {
         }
 
         // and run the initialization logic
-        final Context appContext = new Context();
+        final Context appContext = odkUserContext.getContext();
 
         AndroidConnectFactory.configure();
         final UserDbInterface impl = new UserDbInterfaceImpl(
@@ -174,14 +178,5 @@ public class ReInitializeAsyncListener implements AsyncListener {
         asyncContext.complete();
       }
     });
-  }
-
-  public String getAppName() {
-    return appName;
-  }
-
-  public String getActiveUser() {
-    // TODO Auto-generated method stub
-    return null;
   }
 }

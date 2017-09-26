@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.webservice.configuration.OdkUserContext;
+
 /**
  * Performs a Reset of the application server.
  * 
@@ -19,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 public class ResetAppServerServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   static final String TAG = "ResetAppServerServlet";
-  String appName = "default";
 
   /**
    * @see HttpServlet#HttpServlet()
@@ -36,9 +37,11 @@ public class ResetAppServerServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext.establishOdkUserContext(request);
+
     AsyncContext asyncCtx = request.startAsync();
 
-    ResetAppServerAsyncListener action = new ResetAppServerAsyncListener(asyncCtx, appName);
+    ResetAppServerAsyncListener action = new ResetAppServerAsyncListener(asyncCtx);
 
     asyncCtx.addListener(action);
     asyncCtx.setTimeout(240000L);

@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.Response;
@@ -21,13 +20,13 @@ import org.opendatakit.logging.WebLogger;
 import org.opendatakit.services.database.AndroidConnectFactory;
 import org.opendatakit.services.database.service.OdkDatabaseServiceImpl;
 import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import android.content.Context;
 
 public class CleanAsyncListener implements AsyncListener {
   private static final String TAG = "CleanAsyncListener";
 
-  private final String appName;
   private final AsyncContext asyncContext;
 
   @Override
@@ -65,23 +64,26 @@ public class CleanAsyncListener implements AsyncListener {
     asyncContext.complete();
   }
 
-  CleanAsyncListener(AsyncContext asyncContext, String appName) {
+  CleanAsyncListener(AsyncContext asyncContext) {
     this.asyncContext = asyncContext;
-    this.appName = appName;
 
     asyncContext.start(new Runnable() {
 
       @Override
       public void run() {
-        HttpServletRequest request = null;
+        OdkUserContext odkUserContext = null;
+        String theAppName = null;
         HttpServletResponse response = null;
         try {
+          odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
+          theAppName = odkUserContext.getAppName();
           response = (HttpServletResponse) asyncContext.getResponse();
-          request = (HttpServletRequest) asyncContext.getRequest();
         } catch (Exception e) {
-          WebLogger.getLogger(appName).i(TAG, "async context is no longer valid");
+          WebLogger.getLogger(theAppName).i(TAG, "async context is no longer valid");
           return;
         }
+        final String appName = theAppName;
+        
 
         // we don't need any info on the request.
         // just destroy and re-create the content of the
@@ -113,7 +115,7 @@ public class CleanAsyncListener implements AsyncListener {
           throw new IllegalArgumentException("Unable to copy web content to scratch area");
         }
 
-        final Context appContext = new Context();
+        final Context appContext = odkUserContext.getContext();
 
         AndroidConnectFactory.configure();
         final UserDbInterface impl = new UserDbInterfaceImpl(
@@ -181,14 +183,5 @@ public class CleanAsyncListener implements AsyncListener {
         asyncContext.complete();
       }
     });
-  }
-
-  public String getAppName() {
-    return appName;
-  }
-
-  public String getActiveUser() {
-    // TODO Auto-generated method stub
-    return null;
   }
 }

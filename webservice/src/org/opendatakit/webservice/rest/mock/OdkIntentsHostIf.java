@@ -15,6 +15,7 @@ import org.opendatakit.consts.CharsetConsts;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.webservice.configuration.OdkTool;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 import org.opendatakit.webservice.utilities.OdkSurveyIntentParser;
 import org.opendatakit.webservice.utilities.OdkTablesIntentParser;
 
@@ -52,6 +53,8 @@ public class OdkIntentsHostIf extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext ctxt = OdkUserContext.establishOdkUserContext(request);
+
     ObjectMapper mapper = new ObjectMapper();
     TypeReference ref = new TypeReference<HashMap<String, Object>>() {
     };
@@ -74,20 +77,20 @@ public class OdkIntentsHostIf extends HttpServlet {
     // get current tool
     OdkTool tool = (href.contains("system/index.html") ? OdkTool.SURVEY : OdkTool.TABLES);
 
-    String appName = "default";
+    String appName = ctxt.getAppName();
     Map<String, Object> responseJSON = null;
-    OdkSurveyIntentParser surveyParser = new OdkSurveyIntentParser(appName, appNameUrlPrefix);
-    OdkTablesIntentParser tablesParser = new OdkTablesIntentParser(appName, appNameUrlPrefix);
+    OdkSurveyIntentParser surveyParser = new OdkSurveyIntentParser(ctxt, appNameUrlPrefix);
+    OdkTablesIntentParser tablesParser = new OdkTablesIntentParser(ctxt, appNameUrlPrefix);
 
-    responseJSON = surveyParser.getUrl(appName, requestAction, intent);
+    responseJSON = surveyParser.getUrl(requestAction, intent);
     if (responseJSON == null) {
-      responseJSON = tablesParser.getMainActivityUrl(appName, requestAction, intent);
+      responseJSON = tablesParser.getMainActivityUrl(requestAction, intent);
     }
     if (responseJSON == null) {
-      responseJSON = tablesParser.getTableActivityUrl(appName, requestAction, intent);
+      responseJSON = tablesParser.getTableActivityUrl(requestAction, intent);
     }
     if (responseJSON == null) {
-      responseJSON = surveyParser.getFrameworkUrl(appName);
+      responseJSON = surveyParser.getFrameworkUrl();
     }
 
     try {

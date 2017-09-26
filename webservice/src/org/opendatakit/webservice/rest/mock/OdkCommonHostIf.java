@@ -1,6 +1,8 @@
 package org.opendatakit.webservice.rest.mock;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +15,9 @@ import org.opendatakit.consts.CharsetConsts;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.properties.CommonToolProperties;
 import org.opendatakit.properties.PropertiesSingleton;
+import org.opendatakit.services.utilities.ODKServicesPropertyUtils;
+import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,9 +39,7 @@ public class OdkCommonHostIf extends HttpServlet {
   static final String END_KNOWN_PATH_PART = "/OdkCommonHostIf/";
 
   // request types ('*' suffix of urlPattern)
-  static final String APP_NAME = "appName";
-  static final String ACTIVE_USER = "activeUser";
-  static final String ROLES = "roles";
+  static final String COMMON = "common";
   static final String PROPERTY = "property";
 
   /**
@@ -54,6 +57,8 @@ public class OdkCommonHostIf extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    OdkUserContext odkUserContext = OdkUserContext.establishOdkUserContext(request);
+
     ObjectMapper mapper = new ObjectMapper();
 
     String requestUrl = request.getRequestURL().toString();
@@ -63,28 +68,28 @@ public class OdkCommonHostIf extends HttpServlet {
       return;
     }
 
-    String appName = "default";
-
     // and run the initialization logic
-    final Context appContext = new Context();
+    final Context appContext = odkUserContext.getContext();
 
     String responseString;
     String requestPart = requestUrl.substring(idx + END_KNOWN_PATH_PART.length());
     String[] parts = requestPart.split("/");
     String requestName = parts[0];
-    if (APP_NAME.equals(requestPart)) {
-      responseString = appName;
-    } else if (ACTIVE_USER.equals(requestPart)) {
-      responseString = "anonymous";
-    } else if (ROLES.equals(requestPart)) {
-      responseString = "[]";
+    PropertiesSingleton props = odkUserContext.getPropertiesSingleton();
+    if (COMMON.equals(requestPart)) {
+      Map<String,String> responseMap = new HashMap<String,String>();
+      responseMap.put("appName", odkUserContext.getAppName());
+      responseMap.put("activeUser", ODKServicesPropertyUtils.getActiveUser(props));
+      responseMap.put("rolesList", props.getProperty(CommonToolProperties.KEY_ROLES_LIST));
+      responseMap.put("defaultGroup", props.getProperty(CommonToolProperties.KEY_DEFAULT_GROUP));
+      responseMap.put("usersList", props.getProperty(CommonToolProperties.KEY_USERS_LIST));
+      responseMap.put("serverUrl", props.getProperty(CommonToolProperties.KEY_SYNC_SERVER_URL));
+      responseString = ODKFileUtils.mapper.writeValueAsString(responseMap);
     } else if (PROPERTY.equals(requestName)) {
       if ( parts.length != 2) {
         response.sendError(Response.SC_BAD_REQUEST);
         return;
       }
-      PropertiesSingleton props = CommonToolProperties.get(appContext, appName);
-      
       responseString = props.getProperty(parts[1]);
     } else {
       response.sendError(Response.SC_NOT_FOUND);
@@ -97,8 +102,8 @@ public class OdkCommonHostIf extends HttpServlet {
       response.getOutputStream().write(responseString.getBytes(CharsetConsts.UTF_8));
       response.setStatus(Response.SC_OK);
     } catch (IOException e) {
-      WebLogger.getLogger(appName).e(OdkCommonHostIf.TAG, e.toString());
-      WebLogger.getLogger(appName).printStackTrace(e);
+      WebLogger.getLogger(odkUserContext.getAppName()).e(OdkCommonHostIf.TAG, e.toString());
+      WebLogger.getLogger(odkUserContext.getAppName()).printStackTrace(e);
       response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
     }
   }

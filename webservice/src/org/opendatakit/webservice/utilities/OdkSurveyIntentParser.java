@@ -21,6 +21,7 @@ import org.opendatakit.services.database.OdkConnectionFactorySingleton;
 import org.opendatakit.services.database.OdkConnectionInterface;
 import org.opendatakit.services.database.utlities.ODKDatabaseImplUtils;
 import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -35,9 +36,11 @@ import android.text.TextUtils;
  *
  */
 public class OdkSurveyIntentParser {
+  private final OdkUserContext userContext;
   private final String appNameUrlPrefix;
 
-  public OdkSurveyIntentParser(String appName, String appNameUrlPrefix) {
+  public OdkSurveyIntentParser(OdkUserContext userContext, String appNameUrlPrefix) {
+    this.userContext = userContext;
     this.appNameUrlPrefix = appNameUrlPrefix;
   }
 
@@ -243,8 +246,9 @@ public class OdkSurveyIntentParser {
     return null;
   }
 
-  public Map<String, Object> getUrl(String thisAppName, String action, Map<String, Object> intent) {
+  public Map<String, Object> getUrl(String action, Map<String, Object> intent) {
 
+    String thisAppName = userContext.getAppName();
     // must be at the beginning of any activity that can be called from an
     // external intent
     String data;
@@ -327,7 +331,7 @@ public class OdkSurveyIntentParser {
     return null;
   }
 
-  public Map<String, Object> getFrameworkUrl(String appName) {
+  public Map<String, Object> getFrameworkUrl() {
     // can't find it -- display framework form (list of forms)
     String hashUrl = "#formPath=..%2Fconfig%2Fassets%2Fframework%2Fforms%2Fframework%2F&instanceId=invariant%3A0";
     /*
@@ -347,6 +351,7 @@ public class OdkSurveyIntentParser {
      * 
      */
 
+    String appName = userContext.getAppName();
     Map<String, Object> retVal = new HashMap<String, Object>();
     retVal.put("tool", "survey");
     retVal.put("url", appNameUrlPrefix + appName + "/" + ODKFileUtils.asUriFragment(appName,

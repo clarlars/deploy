@@ -17,6 +17,7 @@ import org.opendatakit.views.OdkData;
 import org.opendatakit.views.ViewDataQueryParams;
 import org.opendatakit.webservice.bridge.OdkDataActivityImpl;
 import org.opendatakit.webservice.configuration.OdkTool;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 import org.opendatakit.webservice.utilities.ViewDataQueryParamsHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -61,6 +62,8 @@ public class OdkDataHostIf extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+
+    OdkUserContext ctxt = OdkUserContext.establishOdkUserContext(request);
 
     AsyncContext asyncCtx = request.startAsync();
 
