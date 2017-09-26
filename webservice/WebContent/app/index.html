@@ -605,7 +605,7 @@ function getLanguageName (languageCode) {
   }
   function getProperty(propertyName) {
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/OdkCommonHostIf/property/' + propertyName, false);  // `false` makes the request synchronous
+	xhr.open('GET', '/webservice/OdkCommonHostIf/property/' + propertyName, false);  // `false` makes the request synchronous
 	xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 	xhr.setRequestHeader('Accept','application/json;charset=utf-8');
 	xhr.send(null);
@@ -786,7 +786,7 @@ function getLanguageName (languageCode) {
         });
 		
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', '/OdkCommonHostIf/common', false);  // `false` makes the request synchronous
+		xhr.open('GET', '/webservice/OdkCommonHostIf/common', false);  // `false` makes the request synchronous
 		xhr.setRequestHeader('X-OpenDataKit-Version','2.0');
 		xhr.setRequestHeader('Accept','application/json;charset=utf-8');
 		xhr.send(null);
@@ -998,6 +998,19 @@ function getLanguageName (languageCode) {
 	};
 	xhr.send();
   }
+ function launchXLSXConverter() {
+   var parent = document.getElementById('blandviewport');
+   var newIframe = document.createElement('iframe');
+   newIframe.className = 'resizeablescreen';
+   newIframe.setAttribute('name', 'screen');
+   newIframe.id = 'previewscreen';
+   $('#blandviewport').empty();
+   
+   newIframe.src = "xlsxconverter/index.html";
+   parent.appendChild(newIframe);
+   var cw = sizeIframe();
+ }
+
 //]]>   
   </script>
 <title>OpenDataKit Environment</title>
@@ -1043,6 +1056,7 @@ function getLanguageName (languageCode) {
 	  </table><hr></td></tr>
 	  <tr><td><button class="syncbutton" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button></td></tr>
 	  <tr><td><button class="resetserverbutton" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button></td></tr>
+	  <tr><td><button class="xlsxconverterbutton" name="xlsxConverter" id="xlsxConverterButton" onclick="launchXLSXConverter()" type="button">XLSX Converter</button></td></tr>
 	</table>  
 	</div>
 	<div class="flowcenter">

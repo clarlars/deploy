@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.webservice.configuration.OdkUserContext;
+
 @WebServlet(urlPatterns = "/OdkFilesIf/*", asyncSupported = true)
 public class UploadFileServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
@@ -29,6 +31,8 @@ public class UploadFileServlet extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    
+    OdkUserContext.establishOdkUserContext(request);
     
     AsyncContext asyncCtxt = request.startAsync();
     

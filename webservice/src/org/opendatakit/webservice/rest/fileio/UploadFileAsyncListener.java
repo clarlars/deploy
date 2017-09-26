@@ -1,10 +1,8 @@
 package org.opendatakit.webservice.rest.fileio;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,30 +16,27 @@ import org.apache.catalina.connector.Response;
 import org.opendatakit.consts.CharsetConsts;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkUserContext;
 
 public class UploadFileAsyncListener implements AsyncListener {
   private static final String TAG = "UploadFileAsyncListener";
   private static final String URL_PATTERN = "/OdkFilesIf/";
   private static final String CONFIG_URL_PATTERN = "/config/";
 
-  private final String appName = "default";
   private final AsyncContext asyncContext;
 
   @Override
   public void onComplete(AsyncEvent arg0) throws IOException {
-    // TODO Auto-generated method stub
 
   }
 
   @Override
   public void onError(AsyncEvent arg0) throws IOException {
-    // TODO Auto-generated method stub
 
   }
 
   @Override
   public void onStartAsync(AsyncEvent arg0) throws IOException {
-    // TODO Auto-generated method stub
 
   }
 
@@ -69,6 +64,9 @@ public class UploadFileAsyncListener implements AsyncListener {
 
       @Override
       public void run() {
+        OdkUserContext odkUserContext = null;        
+        String appName = null;
+        
         HttpServletRequest request = null;
         HttpServletResponse response = null;
 
@@ -76,6 +74,9 @@ public class UploadFileAsyncListener implements AsyncListener {
         BufferedOutputStream os = null;
 
         try {
+          odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
+          appName = odkUserContext.getAppName();
+          
           request = (HttpServletRequest) asyncContext.getRequest();
           response = (HttpServletResponse) asyncContext.getResponse();
 
@@ -92,9 +93,6 @@ public class UploadFileAsyncListener implements AsyncListener {
           String relativeToConfigPath = saveFilePath.substring(configIdx);
 
           File saveFile = ODKFileUtils.asConfigFile(appName, relativeToConfigPath);
-
-          System.out.println("CLARICE: The absolute path of save file is "
-              + saveFile.getAbsolutePath());
 
           // Need to create all the underlying directories
           if (!saveFile.getParentFile().exists()) {
@@ -114,11 +112,9 @@ public class UploadFileAsyncListener implements AsyncListener {
             if (len != 0) {
               os.write(buf, 0, len);
             }
-
             response.setStatus(Response.SC_OK);
           }
         } catch (IOException ioe) {
-          // TODO Auto-generated catch block
           ioe.printStackTrace();
           WebLogger.getLogger(appName).printStackTrace(ioe);
           try {
