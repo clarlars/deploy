@@ -1,8 +1,6 @@
 package org.opendatakit.webservice.configuration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.AsyncContext;
@@ -34,7 +32,7 @@ public class OdkUserContext {
   
   public static OdkUserContext establishOdkUserContext(HttpServletRequest request) {
     OdkUserContext ctxt;
-    ctxt = new OdkUserContext("default", null, null, null, null, null);
+    // ctxt = new OdkUserContext("default", null, null, null, null, null);
     
     ctxt = new OdkUserContext("default", "msundt", "pwd",
         RoleConsts.ADMIN_ROLES_LIST, null, null);
@@ -79,6 +77,7 @@ public class OdkUserContext {
       properties.put(CommonToolProperties.KEY_DEFAULT_GROUP, defaultGroup);
       properties.put(CommonToolProperties.KEY_USERS_LIST, usersList);
     }
+    
     props.setProperties(properties);
   }
 

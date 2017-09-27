@@ -271,30 +271,47 @@ public final class PropertiesSingleton {
       if (value == null) {
         // remove from map
         if (isSecureProperty(propertyName)) {
-          mSecureProps.remove(propertyName);
-          updatedSecureProps = true;
+          if ( mSecureProps.containsKey(propertyName) ) {
+            mSecureProps.remove(propertyName);
+            updatedSecureProps = true;
+          }
         } else if (isDeviceProperty(propertyName)) {
-          mDeviceProps.remove(propertyName);
-          updatedDeviceProps = true;
+          if ( mDeviceProps.containsKey(propertyName) ) {
+            mDeviceProps.remove(propertyName);
+            updatedDeviceProps = true;
+          }
         } else {
-          mGeneralProps.remove(propertyName);
-          updatedGeneralProps = true;
+          if ( mGeneralProps.containsKey(propertyName) ) {
+            mGeneralProps.remove(propertyName);
+            updatedGeneralProps = true;
+          }
         }
       } else {
         // set into map
         if (isSecureProperty(propertyName)) {
-          mSecureProps.setProperty(propertyName, value);
-          updatedSecureProps = true;
+          String existingValue  = mSecureProps.getProperty(propertyName);
+          if ( existingValue == null || !existingValue.equals(value) ) {
+            mSecureProps.setProperty(propertyName, value);
+            updatedSecureProps = true;
+          }
         } else if (isDeviceProperty(propertyName)) {
-          mDeviceProps.setProperty(propertyName, value);
-          updatedDeviceProps = true;
+          String existingValue  = mDeviceProps.getProperty(propertyName);
+          if ( existingValue == null || !existingValue.equals(value) ) {
+            mDeviceProps.setProperty(propertyName, value);
+            updatedDeviceProps = true;
+          }
         } else {
-          mGeneralProps.setProperty(propertyName, value);
-          updatedGeneralProps = true;
+          String existingValue  = mGeneralProps.getProperty(propertyName);
+          if ( existingValue == null || !existingValue.equals(value) ) {
+            mGeneralProps.setProperty(propertyName, value);
+            updatedGeneralProps = true;
+          }
         }
       }
     }
-    writeProperties(updatedSecureProps, updatedDeviceProps, updatedGeneralProps);
+    if (updatedSecureProps || updatedDeviceProps || updatedGeneralProps) {
+      writeProperties(updatedSecureProps, updatedDeviceProps, updatedGeneralProps);
+    }
   }
 
   /**
@@ -559,15 +576,20 @@ public final class PropertiesSingleton {
 
     {
       /*
-       * Access revision within lock to ensure we get the latest
-       * update state after any revisions that are in progress.
+       * Fetch the disk revision outside of a GainPropertiesLock. 
+       * This is a fast-and-loose fetch. 
+       * 
+       * writeProperties() gains the lock and immediately updates the 
+       * revision file before writing any updates.
+       *  
+       * If we detect any new revision here, outside of the lock, then 
+       * readProperties(...) will gain the lock and obtain the actual
+       * revision on disk, which might have changed from our newRevision
+       * value, because multiple writeProperties() calls might have 
+       * intervened between this fast-and-loose fetch and the current
+       * thread gaining an exclusive lock within readProperties(...). 
        */
-      GainPropertiesLock theLock = new GainPropertiesLock(mAppName, mAppLock);
-      try {
-        newRevision = getCurrentRevision();
-      } finally {
-        theLock.release();
-      }
+      newRevision = getCurrentRevision();
     }
     
     if (newRevision == INVALID_REVISION || newRevision != currentRevision) {
@@ -717,7 +739,7 @@ public final class PropertiesSingleton {
       theLock.release();
     }
   }
-  
+
   private File backupFile(File toBeOverwritten, int counter) {
     File tempPendingDelete = new File( toBeOverwritten.getParentFile(), 
         toBeOverwritten.getName() + ".del" + Integer.toString(counter));
@@ -726,24 +748,41 @@ public final class PropertiesSingleton {
   
   private void replaceFile(File newFile, File toBeOverwritten) throws IOException {
     int counter = 0;
+    // find a file that we can use as a backup file
+    // if there is an old backup file, try to remove it
+    // before generating yet another backup filename.
     File tempPendingDelete = backupFile(toBeOverwritten, counter++);
-    boolean fileSuccess = true;
     while ( tempPendingDelete.exists() && !tempPendingDelete.delete()) {
       tempPendingDelete = backupFile(toBeOverwritten, counter++);
     }
-    fileSuccess = toBeOverwritten.renameTo(tempPendingDelete);
-    if (!fileSuccess) {
-      WebLogger.getLogger(mAppName).i(TAG, "File Rename to Backup Failed! " +
-          toBeOverwritten.getName() );
-      throw new IOException("Unable to rename configuration file");
-    } else {
-      fileSuccess = newFile.renameTo(toBeOverwritten);
+
+    if ( toBeOverwritten.exists() ) {
+      // rename the current file as the backup filename.
+      boolean fileSuccess = toBeOverwritten.renameTo(tempPendingDelete);
+      if (!fileSuccess) {
+        WebLogger.getLogger(mAppName).i(TAG, "File Rename to Backup Failed! " + toBeOverwritten.getName());
+        throw new IOException("Unable to rename configuration file");
+      }
+    }
+
+    try {
+      // rename the new file to the current file
+      boolean fileSuccess = newFile.renameTo(toBeOverwritten);
       if (!fileSuccess) {
         WebLogger.getLogger(mAppName).i(TAG, "Temporary to Permanent File Rename Failed! " +
             toBeOverwritten.getName() );
         // try to restore the file we were attempting to replace
-        tempPendingDelete.renameTo(toBeOverwritten);
+        // by renaming the file pending delete back to the current file.
+        if ( tempPendingDelete.exists() ) {
+          tempPendingDelete.renameTo(toBeOverwritten);
+        }
         throw new IOException("Unable to replace configuration file");
+      }
+    } finally {
+      // and if we get here, if the backup file exists, attempt to delete it.
+      // (keeps the clutter at bay).
+      if ( tempPendingDelete.exists() ) {
+        tempPendingDelete.delete();
       }
     }
   }
