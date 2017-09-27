@@ -3,8 +3,8 @@
 /* Custom Stylesheet */
 /* ODK specific */
 .topversion {
-	float: left;
-	font-size: 36px;
+	float: right;
+	font-size: 20px;
 	font-weight: bold;
 	text-align: right;
 	color: blue;
