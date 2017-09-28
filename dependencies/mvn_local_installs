@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=httpclientandroidlib-4.5.2-1.jar -DgroupId=org.opendatakit -DartifactId=httpclientandroidlib -Dversion=4.5.2-1 -Dpackaging=jar -DupdateReleaseInfo=true

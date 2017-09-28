@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>library</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>library</name>
+    <description></description>
+
+    <parent>
+        <groupId>org.opendatakit</groupId>
+        <artifactId>webservice-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/androidcommon_mod</source>
+                                <source>src/androidcommon_src</source>
+                                <source>src/androidlibrary_gen</source>
+                                <source>src/androidlibrary_mod</source>
+                                <source>src/androidlibrary_src</source>
+                                <source>src/android_sdk_15_src</source>
+                                <source>src/android_sdk_23_mod</source>
+                                <source>src/android_sdk_MNC_src</source>
+                                <source>src/platform_frameworks_base_core_gen</source>
+                                <source>src/platform_frameworks_base_core_mod</source>
+                                <source>src/platform_frameworks_base_core_src</source>
+                                <source>src/platform_libcore_luni_src</source>
+                                <source>src/platform_tools_base_annotations_src</source>
+                                <source>src/services_gen</source>
+                                <source>src/services_mod</source>
+                                <source>src/services_src</source>
+                                <source>src/sqlite_mod</source>
+                                <source>src/survey_src</source>
+                                <source>src/tables_mod</source>
+                                <source>src/tables_src</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opendatakit</groupId>
+            <artifactId>aggregate-rest-interface</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendatakit</groupId>
+            <artifactId>httpclientandroidlib</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.kxml</groupId>
+            <artifactId>kxml2</artifactId>
+        </dependency>
+    </dependencies>
+</project>
