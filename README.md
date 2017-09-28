@@ -76,7 +76,8 @@ siteScratch -- this is the scratch website and JDBC implementation of sqlite
 
 ## To build
 
-`mvn clean package`
+1. `ant` in dependencies directory
+2. `mvn clean package`
 
 This builds a Spring Boot uber jar
 
