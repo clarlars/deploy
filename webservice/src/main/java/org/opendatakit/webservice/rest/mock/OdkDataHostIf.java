@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opendatakit.database.queries.ResumableQuery;
 import org.opendatakit.views.IOdkWebView;
 import org.opendatakit.views.OdkData;
-import org.opendatakit.views.ViewDataQueryParams;
 import org.opendatakit.webservice.bridge.OdkDataActivityImpl;
 import org.opendatakit.webservice.configuration.OdkTool;
 import org.opendatakit.webservice.configuration.OdkUserContext;
-import org.opendatakit.webservice.utilities.ViewDataQueryParamsHelper;
+import org.opendatakit.webservice.utilities.ViewDataQueryHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,13 +84,13 @@ public class OdkDataHostIf extends HttpServlet {
     Map<String, Object> url = (Map<String, Object>) theRequest.get("url");
     String href = (String) url.get("href");
     OdkTool tool = (href.contains("system/index.html") ? OdkTool.SURVEY : OdkTool.TABLES);
-    ViewDataQueryParams params = null;
+    ResumableQuery queryParams = null;
     if (tool == OdkTool.TABLES && theRequest.containsKey("viewDataParams")) {
       Map<String, Object> viewDataParams = (Map<String, Object>) theRequest.get("viewDataParams");
-      params = ViewDataQueryParamsHelper.readQueryFromIntentExtrasSubset(viewDataParams);
+      queryParams = ViewDataQueryHelper.readQueryFromIntentExtrasSubset(viewDataParams);
     }
 
-    OdkDataActivityImpl action = new OdkDataActivityImpl(asyncCtx, tool, params);
+    OdkDataActivityImpl action = new OdkDataActivityImpl(asyncCtx, tool, queryParams);
 
     asyncCtx.addListener(action);
     asyncCtx.setTimeout(90000L);

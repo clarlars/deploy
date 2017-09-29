@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.opendatakit.services.database.utlities;
+package org.opendatakit.services.database.utilities;
 
 import android.database.Cursor;
 import org.opendatakit.aggregate.odktables.rest.TableConstants;
@@ -32,7 +32,7 @@ public final class SyncETagsUtils {
    */
   private SyncETagsUtils() {
   }
-  
+
   /**
    * Remove all ETags for the given table. Invoked when we delete a table...
    * 

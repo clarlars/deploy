@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.opendatakit.services.database.utlities;
+package org.opendatakit.services.database.utilities;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -5002,7 +5002,7 @@ public final class ODKDatabaseImplUtils {
       OrderedColumns orderedColumns, ContentValues cvValues, String rowId, String activeUser,
       String rolesList, String locale) throws ActionNotAuthorizedException {
 
-    if (cvValues == null || cvValues.size() <= 0) {
+    if (cvValues == null) {
       throw new IllegalArgumentException(t + ": No values to add into table " + tableId);
     }
 

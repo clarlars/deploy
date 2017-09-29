@@ -15,11 +15,12 @@
 package org.opendatakit.activities;
 
 import android.os.Bundle;
+
+import org.opendatakit.database.queries.ResumableQuery;
 import org.opendatakit.database.service.UserDbInterface;
 import org.opendatakit.listener.DatabaseConnectionListener;
 import org.opendatakit.views.ExecutorContext;
 import org.opendatakit.views.ExecutorProcessor;
-import org.opendatakit.views.ViewDataQueryParams;
 
 /**
  * @author mitchellsundt@gmail.com
@@ -44,7 +45,7 @@ public interface IOdkDataActivity {
    * @return responseJSON or null if there is none available
    */
   String getResponseJSON(String fragmentID);
-  
+
   /**
    * Return a new ExecutorProcessor that will be able to process data off the
    * ExecutorContext queue.
@@ -87,5 +88,5 @@ public interface IOdkDataActivity {
   /**
    * Retrieves SQL query parameters
    */
-  ViewDataQueryParams getViewQueryParams(String viewID) throws IllegalArgumentException;
+  ResumableQuery getViewQuery(String viewID) throws IllegalArgumentException;
 }

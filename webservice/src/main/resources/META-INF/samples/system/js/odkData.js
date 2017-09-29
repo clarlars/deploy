@@ -6,6 +6,7 @@
  
  (function() {
 'use strict';
+/* globals odkCommon */
 
 if ( window.odkDataIf === null || window.odkDataIf === undefined ) {
   window.odkDataIf = {

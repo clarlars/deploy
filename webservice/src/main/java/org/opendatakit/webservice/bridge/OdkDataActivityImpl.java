@@ -11,6 +11,7 @@ import org.apache.catalina.connector.Response;
 import org.json.JSONObject;
 import org.opendatakit.activities.IOdkAsyncDataActivity;
 import org.opendatakit.consts.CharsetConsts;
+import org.opendatakit.database.queries.ResumableQuery;
 import org.opendatakit.database.service.UserDbInterface;
 import org.opendatakit.database.service.UserDbInterfaceImpl;
 import org.opendatakit.listener.DatabaseConnectionListener;
@@ -24,7 +25,6 @@ import org.opendatakit.tables.views.webkits.TableDataExecutorProcessor;
 import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.views.ExecutorContext;
 import org.opendatakit.views.ExecutorProcessor;
-import org.opendatakit.views.ViewDataQueryParams;
 import org.opendatakit.webservice.configuration.OdkTool;
 import org.opendatakit.webservice.configuration.OdkUserContext;
 
@@ -43,7 +43,7 @@ public class OdkDataActivityImpl
   private static final String TAG = "OdkDataActivityImpl";
   final OdkTool tool;
   final OdkUserContext odkUserContext;
-  final ViewDataQueryParams params;
+  final ResumableQuery params;
   UserDbInterface impl;
   DatabaseConnectionListener listener = null;
   AsyncContext asyncContext = null;
@@ -83,7 +83,7 @@ public class OdkDataActivityImpl
     asyncContext.complete();
   }
 
-  public OdkDataActivityImpl(AsyncContext asyncContext, OdkTool tool, ViewDataQueryParams params) {
+  public OdkDataActivityImpl(AsyncContext asyncContext, OdkTool tool, ResumableQuery params) {
     this.asyncContext = asyncContext;
     this.odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
     this.tool = tool;
@@ -164,7 +164,7 @@ public class OdkDataActivityImpl
   }
 
   @Override
-  public ViewDataQueryParams getViewQueryParams(String viewID) throws IllegalArgumentException {
+  public ResumableQuery getViewQuery(String viewID) throws IllegalArgumentException {
     return params;
   }
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.opendatakit.consts.IntentConsts;
 import org.opendatakit.database.data.OrderedColumns;
+import org.opendatakit.database.queries.ResumableQuery;
 import org.opendatakit.database.service.DbHandle;
 import org.opendatakit.database.service.UserDbInterface;
 import org.opendatakit.database.service.UserDbInterfaceImpl;
@@ -19,7 +20,6 @@ import org.opendatakit.tables.data.ViewFragmentType;
 import org.opendatakit.tables.utils.Constants;
 import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.views.OdkData;
-import org.opendatakit.views.ViewDataQueryParams;
 import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import android.os.Bundle;
@@ -55,7 +55,7 @@ public class OdkTablesIntentParser {
     if (bundle == null) {
       return null;
     }
-    String fileName = (String) bundle.get(Constants.IntentKeys.FILE_NAME);
+    String fileName = (String) bundle.get(OdkData.IntentKeys.FILE_NAME);
     return fileName;
   }
 
@@ -158,10 +158,10 @@ public class OdkTablesIntentParser {
     return (String) extras.get(IntentConsts.INTENT_KEY_TABLE_ID);
   }
 
-  private ViewDataQueryParams readQueryFromIntent(Map<String, Object> intent) {
+  private ResumableQuery readQueryFromIntent(Map<String, Object> intent) {
     Map<String, Object> extras = (Map<String, Object>) intent.get("extras");
 
-    ViewDataQueryParams queryParams = ViewDataQueryParamsHelper
+    ResumableQuery queryParams = ViewDataQueryHelper
         .readQueryFromIntentExtrasSubset(extras);
     return queryParams;
   }
@@ -340,11 +340,11 @@ public class OdkTablesIntentParser {
     }
     if (mOriginalFileName == null) {
       // get the information from the Intent
-      mOriginalFileName = (extras != null && extras.containsKey(Constants.IntentKeys.FILE_NAME))
-          ? ((String) extras.get(Constants.IntentKeys.FILE_NAME)) : null;
+      mOriginalFileName = (extras != null && extras.containsKey(OdkData.IntentKeys.FILE_NAME))
+          ? ((String) extras.get(OdkData.IntentKeys.FILE_NAME)) : null;
     }
 
-    ViewDataQueryParams queryParams = readQueryFromIntent(intent);
+    ResumableQuery queryParams = readQueryFromIntent(intent);
 
     // onResume actions
     try {
@@ -387,15 +387,8 @@ public class OdkTablesIntentParser {
     retVal.put("url", mAppNameUrlPrefix + mUserContext.getAppName() + "/" + baseUrl);
     retVal.put("tableDisplayViewType", mCurrentFragmentType.name());
 
-    retVal.put(OdkData.IntentKeys.TABLE_ID, queryParams.tableId);
-    retVal.put(IntentConsts.INTENT_KEY_INSTANCE_ID, queryParams.rowId);
-    retVal.put(OdkData.IntentKeys.SQL_WHERE, queryParams.whereClause);
-    retVal.put(OdkData.IntentKeys.SQL_SELECTION_ARGS, queryParams.selectionArgs.asJSON());
-    retVal.put(OdkData.IntentKeys.SQL_GROUP_BY_ARGS, queryParams.groupBy);
-    retVal.put(OdkData.IntentKeys.SQL_HAVING, queryParams.having);
-    retVal.put(OdkData.IntentKeys.SQL_ORDER_BY_ELEMENT_KEY, queryParams.orderByElemKey);
-    retVal.put(OdkData.IntentKeys.SQL_ORDER_BY_DIRECTION, queryParams.orderByDir);
     retVal.put(IntentConsts.INTENT_KEY_APP_NAME, mUserContext.getAppName());
+    ViewDataQueryHelper.populateQueryFields(retVal, queryParams);
     return retVal;
   }
 
