@@ -1,7 +1,6 @@
 package android.os;
 
 import java.io.File;
-import java.nio.file.Paths;
 
 public class Environment {
 	
@@ -103,7 +102,7 @@ public class Environment {
     }
 
     public static File getExternalStorageDirectory() {
-    	String path = System.getProperty("data.dir", Paths.get("scratch").toAbsolutePath().toString());
+    	String path = System.getProperty("data.dir");
     	return new File(path);
     }
 }

@@ -1,6 +1,13 @@
 package org.opendatakit.webservice.rest.configure;
 
-import android.content.Context;
+import java.io.File;
+import java.io.IOException;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.catalina.connector.Response;
 import org.apache.commons.io.FileUtils;
 import org.opendatakit.builder.InitializationOutcome;
@@ -16,12 +23,7 @@ import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.webservice.configuration.OdkUserContext;
 import org.opendatakit.webservice.utilities.ZipUtil;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import android.content.Context;
 
 public class CleanAsyncListener implements AsyncListener {
   private static final String TAG = "CleanAsyncListener";

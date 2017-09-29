@@ -1,17 +1,21 @@
 package org.opendatakit.webservice.utilities;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collections;
+import java.nio.file.attribute.FileAttribute;
 
 public class ZipUtil {
   public static void extractZip(Path pathToZip, Path outputPath) throws IOException {
-    // the uri scheme has to be jar
-    URI zipUri = URI.create("jar:file:" + pathToZip.toAbsolutePath().toString());
 
-    try (FileSystem zipFs = FileSystems.newFileSystem(zipUri, Collections.emptyMap())) {
+    try (FileSystem zipFs = FileSystems.newFileSystem(pathToZip, ZipUtil.class.getClassLoader())) {
       Files.walkFileTree(zipFs.getPath("/"), new SimpleFileVisitor<Path>() {
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -35,9 +39,14 @@ public class ZipUtil {
   }
 
   public static void extractZipFromResource(String name, Path outputPath) throws IOException {
-    Path temp = Files.createTempFile(name, null);
-    Files.copy(ZipUtil.class.getClassLoader().getResourceAsStream(name), temp, StandardCopyOption.REPLACE_EXISTING);
+    FileAttribute<?>[] attrs = {};
+    Path temp = Files.createTempFile(name, ".zip", attrs);
+    try {
+      Files.copy(ZipUtil.class.getClassLoader().getResourceAsStream(name), temp, StandardCopyOption.REPLACE_EXISTING);
 
-    extractZip(temp, outputPath);
+      extractZip(temp, outputPath);
+    } finally {
+    	Files.deleteIfExists(temp);
+    }
   }
 }
