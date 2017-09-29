@@ -19,7 +19,73 @@
 
     <properties>
         <spring-boot.run.skip>false</spring-boot.run.skip>
+        <generated-zip.output.directory>${project.build.directory}/generated-resources/preset-zip</generated-zip.output.directory>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-clean-zip</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/clean-zip.xml</descriptor>
+                            </descriptors>
+                            <finalName>clean-zip</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <outputDirectory>${generated-zip.output.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-samples-zip</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/samples-zip.xml</descriptor>
+                            </descriptors>
+                            <finalName>samples-zip</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <outputDirectory>${generated-zip.output.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${generated-zip.output.directory}</directory>
+                                    <!--<targetPath></targetPath>-->
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
@@ -64,13 +130,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

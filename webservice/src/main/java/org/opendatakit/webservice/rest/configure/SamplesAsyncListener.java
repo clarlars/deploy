@@ -23,6 +23,7 @@ import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.webservice.configuration.OdkUserContext;
 
 import android.content.Context;
+import org.opendatakit.webservice.utilities.ZipUtil;
 
 public class SamplesAsyncListener implements AsyncListener {
   private static final String TAG = "SamplesAsyncListener";
@@ -104,13 +105,9 @@ public class SamplesAsyncListener implements AsyncListener {
         }
 
         // replicate the server's configuration in the scratch area
-        File webContentDir = new File(
-            asyncContext.getRequest().getServletContext().getRealPath("/META-INF/samples"));
-
         try {
-          file.mkdirs();
-          FileUtils.copyDirectory(webContentDir, file);
-        } catch (IOException e1) {
+          ZipUtil.extractZipFromResource("samples-zip.zip", file.toPath());
+        } catch (IOException e) {
           throw new IllegalArgumentException("Unable to copy web content to scratch area");
         }
 

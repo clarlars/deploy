@@ -1,13 +1,6 @@
 package org.opendatakit.webservice.rest.configure;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.http.HttpServletResponse;
-
+import android.content.Context;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.io.FileUtils;
 import org.opendatakit.builder.InitializationOutcome;
@@ -21,8 +14,14 @@ import org.opendatakit.services.database.AndroidConnectFactory;
 import org.opendatakit.services.database.service.OdkDatabaseServiceImpl;
 import org.opendatakit.utilities.ODKFileUtils;
 import org.opendatakit.webservice.configuration.OdkUserContext;
+import org.opendatakit.webservice.utilities.ZipUtil;
 
-import android.content.Context;
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
 public class CleanAsyncListener implements AsyncListener {
   private static final String TAG = "CleanAsyncListener";
@@ -105,13 +104,9 @@ public class CleanAsyncListener implements AsyncListener {
         }
 
         // replicate the server's configuration in the scratch area
-        File webContentDir = new File(
-            asyncContext.getRequest().getServletContext().getRealPath("/META-INF/clean"));
-
         try {
-          file.mkdirs();
-          FileUtils.copyDirectory(webContentDir, file);
-        } catch (IOException e1) {
+          ZipUtil.extractZipFromResource("clean-zip.zip", file.toPath());
+        } catch (IOException e) {
           throw new IllegalArgumentException("Unable to copy web content to scratch area");
         }
 
