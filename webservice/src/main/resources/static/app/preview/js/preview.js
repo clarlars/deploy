@@ -952,6 +952,54 @@ function reinitbutton() {
 	};
 	xhr.send();
 }
+
+function updateParamsButton() {
+    updateUserInformation();
+	$("#cfgserverurl").html(getServerUrl());
+	$("#cfgappname").html(getAppName());
+	$("#cfgactiveuser").html(getActiveUser());
+}
+
+function loginButton() {
+	// abort all nested windows
+	while (pageStack.length > 0) {
+		// cancel this window
+		odkCloseWindowAction(0, {});
+	}
+	// clear the top-level window
+	var parent = document.getElementById('previewblandviewport');
+	parent.innerHTML = "Verifying User Permissions Against Server ...";
+	$('#previewblandviewport').waitMe({
+		effect : 'roundBounce',
+		text : 'Verifying User Permissions Against Server ...',
+		bg : 'rgba(255,255,255,0.7)',
+		color : '#000',
+		sizeW : '',
+		sizeH : ''
+	});
+
+	// resolve filename - asynchronous
+    var data = {};
+    data['username'] = 'sue';
+    data['password'] ='password';
+    data['appName'] = 'default';
+    data['scratchDir'] = '';
+    data['serverUrl'] = 'http://128.208.4.152';
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/webservice/OdkVerifySettingsFromAppServer', true);
+	xhr.setRequestHeader('X-OpenDataKit-Version', '2.0');
+	xhr.setRequestHeader('Accept', 'application/json;charset=utf-8');
+	xhr.onload = function() {
+		// TODO: handle errors
+		//var responseStruct = JSON.parse(this.responseText);
+		var parent = document.getElementById('previewblandviewport');
+		parent.innerHTML = "";
+		$('#previewblandviewport').waitMe('hide');
+	};
+	xhr.send(JSON.stringify(data));
+}
+
 function syncbutton() {
 	// abort all nested windows
 	while (pageStack.length > 0) {

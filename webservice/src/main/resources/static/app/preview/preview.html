@@ -1,63 +1,65 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<!-- <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' /> -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script type="text/javascript" src="../lib/jquery-3.2.1.js"></script>
-<script type="text/javascript" src="../lib/jquery-migrate-3.0.0.js"></script>
-<script type="text/javascript" src="../lib/spinner/waitMe.min.js"></script>
-<script type="text/javascript" src="js/preview.js"></script>
-<link rel="stylesheet" type="text/css" href="../css/animate.css" />
-<link rel="stylesheet" type="text/css" href="../css/style.css" />
-<link rel="stylesheet" type="text/css" href="../lib/spinner/waitMe.min.css" />
-</head>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <!-- <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' /> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/javascript" src="../lib/jquery-3.2.1.js"></script>
+        <script type="text/javascript" src="../lib/jquery-migrate-3.0.0.js"></script>
+        <script type="text/javascript" src="../lib/spinner/waitMe.min.js"></script>
+        <script type="text/javascript" src="js/preview.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/animate.css" />
+        <link rel="stylesheet" type="text/css" href="../css/style.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/spinner/waitMe.min.css" />
+    </head>
 
-<body class="absolute">
-  <noscript>This page requires javascript and a Chrome or WebKit browser</noscript>
-   <div>
-    <div class="flowright">
-	  <label class="pb" for="screenchoice">Device Dimension</label>
-	  <select id="screenchoice" name="size" onchange="resizeIframe()">
-		<option id="w480x854" value="w480x854" selected><label for="w480x854">480 x 854 pixels (Droid)</label></option>
-		<option id="w480x800" value="w480x800" ><label for="w480x800">480 x 800 pixels (Nexus S, Nexus One)</label></option>
-		<option id="w720x1280" value="w720x1280" ><label for="w720x1280">720 x 1280 pixels (Galaxy Nexus)</label></option>
-		<option  id="w768x1280" value="w768x1280" ><label for="w768x1280">768 x 1280 pixels (Nexus 4)</label></option>
-		<option id="w800x1280" value="w800x1280" ><label for="w800x1280">800 x 1280 pixels (Nexus 7)</label></option>
-		<option id="w1024x600" value="w1024x600" ><label for="w1024x600">1024 x 600 pixels (7" Tablet)</label></option>
-		<option id="w1280x800" value="w1280x800" ><label for="w1280x800">1280 x 800 pixels (10.1" Tablet)</label></option>
-		<option id="w2560x1600" value="w2560x1600" ><label for="w2560x1600">2560 x 1600 pixels (Nexus 10)</label></option>
-	  </select>
-    </div>
-	<div class="backdiv">
-	  <button class="backbutton" name="backbutton" id="backbutton" onclick="backbutton()" type="button">Back Button</button>
-	</div>
-	<br>
-	</div>
-	<div class="flowleft">
-	<table>
-	  <tr><td><button class="reinitbutton" name="reinitbutton" id="reinitbutton" onclick="reinitbutton()" type="button">Re-Initialize</button></td></tr>
-	  <tr><td><hr>Destructive Actions:</td></tr>
-	  <tr><td><button class="cleanbutton" name="cleanbutton" id="cleanbutton" onclick="cleanbutton()" type="button">Clean Slate</button></td></tr>
-	  <tr><td><button class="samplesbutton" name="samplesbutton" id="samplesbutton" onclick="samplesbutton()" type="button">Application Samples</button></td></tr>
-	  <tr><td><hr><table class="configtext">
-	  <tr><td>Server Url:</td></tr>
-	  <tr><td class="configtextbold" id="cfgserverurl">blank</td></tr>
-	  <tr><td>Application Name:</td></tr> 
-	  <tr><td class="configtextbold" id="cfgappname">blank</td></tr>
-	  <tr><td>Active User:</td></tr>
-	  <tr><td class="configtextbold" id="cfgactiveuser">blank</td></tr>
-	  </table><hr></td></tr>
-	  <tr><td><button class="syncbutton" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button></td></tr>
-	  <tr><td><button class="resetserverbutton" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button></td></tr>
-	</table>  
-	</div>
-	<div class="flowcenter">
-	  <div class="fulliframearea" id="previewblandviewport">
-	  </div>
-  </div>
-  <script type="text/javascript">
-    $(initialLoadPage);
-  </script>
-  </body>
+    <body class="absolute">
+        <noscript>This page requires javascript and a Chrome or WebKit browser</noscript>
+        <div>
+            <div class="flowright">
+                <label class="pb" for="screenchoice">Device Dimension</label>
+                <select id="screenchoice" name="size" onchange="resizeIframe()">
+                    <option id="w480x854" value="w480x854" selected><label for="w480x854">480 x 854 pixels (Droid)</label></option>
+                    <option id="w480x800" value="w480x800" ><label for="w480x800">480 x 800 pixels (Nexus S, Nexus One)</label></option>
+                    <option id="w720x1280" value="w720x1280" ><label for="w720x1280">720 x 1280 pixels (Galaxy Nexus)</label></option>
+                    <option	 id="w768x1280" value="w768x1280" ><label for="w768x1280">768 x 1280 pixels (Nexus 4)</label></option>
+                    <option id="w800x1280" value="w800x1280" ><label for="w800x1280">800 x 1280 pixels (Nexus 7)</label></option>
+                    <option id="w1024x600" value="w1024x600" ><label for="w1024x600">1024 x 600 pixels (7" Tablet)</label></option>
+                    <option id="w1280x800" value="w1280x800" ><label for="w1280x800">1280 x 800 pixels (10.1" Tablet)</label></option>
+                    <option id="w2560x1600" value="w2560x1600" ><label for="w2560x1600">2560 x 1600 pixels (Nexus 10)</label></option>
+                </select>
+            </div>
+            <div class="backdiv">
+                <button class="backbutton" name="backbutton" id="backbutton" onclick="backbutton()" type="button">Back Button</button>
+            </div>
+            <br>
+        </div>
+        <div class="flowleft">
+            <table>
+                <tr><td><button class="left-pane-button" name="reinitbutton" id="reinitbutton" onclick="reinitbutton()" type="button">Re-Initialize</button></td></tr>
+                <tr><td><hr>Destructive Actions:</td></tr>
+                <tr><td><button class="left-pane-button" name="cleanbutton" id="cleanbutton" onclick="cleanbutton()" type="button">Clean Slate</button></td></tr>
+                <tr><td><button class="left-pane-button" name="samplesbutton" id="samplesbutton" onclick="samplesbutton()" type="button">Application Samples</button></td></tr>
+                <tr><td><hr><table class="configtext">
+                    <tr><td>Server Url:</td></tr>
+                    <tr><td class="configtextbold" id="cfgserverurl">blank</td></tr>
+                    <tr><td>Application Name:</td></tr> 
+                    <tr><td class="configtextbold" id="cfgappname">blank</td></tr>
+                    <tr><td>Active User:</td></tr>
+                    <tr><td class="configtextbold" id="cfgactiveuser">blank</td></tr>
+                    <tr><td><button class="left-pane-button" name="updateParamsButton" id="updateParamsButton" onclick="updateParamsButton()" type="button">UpdateParams</button></td></tr>
+                
+                </table><hr></td></tr>
+                <tr><td><button class="left-pane-button" name="loginButton" id="loginButton" onclick="loginButton()" type="button">Login to Server</button></td></tr>
+                <tr><td><button class="left-pane-button" name="syncbutton" id="syncbutton" onclick="syncbutton()" type="button">Sync from Server</button></td></tr>
+                <tr><td><button class="left-pane-button" name="resetserverbutton" id="resetserverbutton" onclick="resetserverbutton()" type="button">Reset Server</button></td></tr>
+            </table>	
+        </div>
+        <div class="flowcenter">
+            <div class="fulliframearea" id="previewblandviewport"></div>
+        </div>
+        <script type="text/javascript">
+            $(initialLoadPage);
+        </script>
+    </body>
 </html>

@@ -46,45 +46,14 @@
 	text-align: center;
 	margin-bottom: 10px;
 }
+.left-pane-button {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px 50px 10px 50px;
+}
 .backbutton {
 	font-size: 20px;
 	font-weight: bold;
-	padding: 10px 50px 10px 50px;
-}
-.reinitbutton {
-	font-size: 20px;
-	font-weight: bold;
-    width: 100%;
-	padding: 10px 50px 10px 50px;
-}
-.cleanbutton {
-	font-size: 20px;
-	font-weight: bold;
-    width: 100%;
-	padding: 10px 50px 10px 50px;
-}
-.samplesbutton {
-	font-size: 20px;
-	font-weight: bold;
-    width: 100%;
-	padding: 10px 50px 10px 50px;
-}
-.syncbutton {
-	font-size: 20px;
-	font-weight: bold;
-    width: 100%;
-	padding: 10px 50px 10px 50px;
-}
-.resetserverbutton {
-	font-size: 20px;
-	font-weight: bold;
-    width: 100%;
-	padding: 10px 50px 10px 50px;
-}
-.xlsxconverterbutton {
-	font-size: 20px;
-	font-weight: bold;
-    width: 100%;
 	padding: 10px 50px 10px 50px;
 }
 .configtext {

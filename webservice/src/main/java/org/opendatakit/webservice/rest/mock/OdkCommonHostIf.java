@@ -57,7 +57,8 @@ public class OdkCommonHostIf extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    OdkUserContext odkUserContext = OdkUserContext.establishOdkUserContext(request);
+    // We should figure this out from the url??
+    OdkUserContext odkUserContext = OdkUserContext.establishOdkUserContext(request, "default");
 
     ObjectMapper mapper = new ObjectMapper();
 
