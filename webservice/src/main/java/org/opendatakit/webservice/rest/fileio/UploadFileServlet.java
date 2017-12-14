@@ -32,7 +32,8 @@ public class UploadFileServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     
-    OdkUserContext.establishOdkUserContext(request);
+	// TODO: deal with "default" appName
+    OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
     
     AsyncContext asyncCtxt = request.startAsync();
     

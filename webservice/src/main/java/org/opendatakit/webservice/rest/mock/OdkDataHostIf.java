@@ -63,7 +63,8 @@ public class OdkDataHostIf extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    OdkUserContext ctxt = OdkUserContext.establishOdkUserContext(request);
+    // TODO: deal with "default" appName
+    OdkUserContext ctxt = OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
 
     AsyncContext asyncCtx = request.startAsync();
 

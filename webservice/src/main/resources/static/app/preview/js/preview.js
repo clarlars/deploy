@@ -467,7 +467,7 @@ var odkCommonProperties = {
     usersList : "",
     serverUrl : "https://opendatakit-tablesdemo.appspot.com",
     useInsecureAuth : true,
-    //TBD: Should "common.auth_credentials" be stored here
+    //TODO: Should "common.auth_credentials" be stored here
     // Or should I just assume what it is?
 };
 
@@ -823,7 +823,7 @@ function updateUserInformation(serverURLToUse, appNameToUse, userNameToUse, pass
 
 	xhr.send(JSON.stringify(givenProps));
 
-    // TBD: Make this dialog look better
+    // TODO: Make this dialog look better
 	if (xhr.status !== 200) {
         alert("Error occurred during updateUserInformation");
 	} 

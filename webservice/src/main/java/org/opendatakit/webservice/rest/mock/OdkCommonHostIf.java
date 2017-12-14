@@ -76,14 +76,16 @@ public class OdkCommonHostIf extends HttpServlet {
     String useInsecureAuth = (String) requestParams.get("useInsecureAuth");
     String password = (String) requestParams.get("password");
     
-    OdkUserContext odkCtxt = OdkUserContext.establishOdkUserContext(request);
+    OdkUserContext odkCtxt;
     
     PropertiesSingleton props;
     
     if (appName != null) {
+      odkCtxt = OdkUserContext.establishOdkUserContext(request, appName);
       props = CommonToolProperties.get(odkCtxt.getContext(), appName);
     } else {
-      props = CommonToolProperties.get(odkCtxt.getContext(), "default");
+      odkCtxt = OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
+      props = CommonToolProperties.get(odkCtxt.getContext(), OdkUserContext.DEFAULT_APP_NAME);
     }
 
     Map<String,String> properties = new HashMap<String,String>();
@@ -93,7 +95,7 @@ public class OdkCommonHostIf extends HttpServlet {
       properties.put(CommonToolProperties.KEY_AUTHENTICATION_TYPE, props.CREDENTIAL_TYPE_USERNAME_PASSWORD);
     } else {
       // We assume you are anonymous
-      // TBD: Should we worry about putting gmail back in?
+      // TODO: Should we worry about putting gmail back in?
       properties.put(CommonToolProperties.KEY_USERNAME, CommonToolProperties.ANONYMOUS_USER);
       properties.put(CommonToolProperties.KEY_AUTHENTICATION_TYPE, props.CREDENTIAL_TYPE_NONE);
     }
@@ -125,8 +127,9 @@ public class OdkCommonHostIf extends HttpServlet {
       throws ServletException, IOException {
    
     
-    // We should figure this out from the url??
-    OdkUserContext odkUserContext = OdkUserContext.establishOdkUserContext(request, "default");
+    // We should figure this out from the url?? 
+    // TODO: Deal with "default"
+    OdkUserContext odkUserContext = OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -148,7 +151,7 @@ public class OdkCommonHostIf extends HttpServlet {
     if (COMMON.equals(requestPart)) {
       Map<String,String> responseMap = new HashMap<String,String>();
       responseMap.put("appName", odkUserContext.getAppName());
-      // TBD: should we use ODKServicesPropertyUtils.getActiveUser()???
+      // TODO: should we use ODKServicesPropertyUtils.getActiveUser()???
       // Maybe both should be returned??
       responseMap.put("activeUser", props.getProperty(CommonToolProperties.KEY_USERNAME));
       responseMap.put("rolesList", props.getProperty(CommonToolProperties.KEY_ROLES_LIST));

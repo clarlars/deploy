@@ -54,9 +54,9 @@ public class VerifySettingsFromAppServerServlet extends HttpServlet{
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     
-    // TBD: Should we worry about the scratch directory??
-    // TBD: Deal with this "default" appName
-    OdkUserContext.establishOdkUserContext(request, "default");
+    // TODO: Should we worry about the scratch directory??
+    // TODO: Deal with this "default" appName
+    OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
     
     AsyncContext asyncContext = request.startAsync();
     

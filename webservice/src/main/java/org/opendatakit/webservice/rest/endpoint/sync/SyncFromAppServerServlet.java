@@ -36,8 +36,8 @@ public class SyncFromAppServerServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    // TBD: Deal with "default" appName
-    OdkUserContext.establishOdkUserContext(request, "default");
+    // TODO: Deal with "default" appName
+    OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
 
     AsyncContext asyncCtx = request.startAsync();
 

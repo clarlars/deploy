@@ -42,7 +42,8 @@ public class ContentFileServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    OdkUserContext.establishOdkUserContext(request);
+    // TODO: deal with "default" appName
+    OdkUserContext.establishOdkUserContext(request, OdkUserContext.DEFAULT_APP_NAME);
 
     AsyncContext asyncCtx = request.startAsync();
 

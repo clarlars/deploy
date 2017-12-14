@@ -36,18 +36,6 @@ public class OdkUserContext {
   private PropertiesSingleton props;
   private HttpServletRequest request;
   
-  public static OdkUserContext establishOdkUserContext(HttpServletRequest request) {
-    OdkUserContext ctxt;
-    // ctxt = new OdkUserContext(DEFAULT_APP_NAME, null, null, null, null, null);
-    
-    ctxt = new OdkUserContext(DEFAULT_APP_NAME, CommonToolProperties.ANONYMOUS_USER, "",
-        RoleConsts.ANONYMOUS_ROLES_LIST, null, null);
-    
-    request.getServletContext().setAttribute(ATTRIBUTE_NAME, ctxt);
-    ctxt.request = request;
-    return ctxt;
-  }
-  
   public static OdkUserContext establishOdkUserContext(HttpServletRequest request, String appName) {
     OdkUserContext ctxt;
     // ctxt = new OdkUserContext(DEFAULT_APP_NAME, null, null, null, null, null);
@@ -56,23 +44,6 @@ public class OdkUserContext {
     }
     
     ctxt = new OdkUserContext(appName);
-    
-    request.getServletContext().setAttribute(ATTRIBUTE_NAME, ctxt);
-    ctxt.request = request;
-    return ctxt;
-  }
-  
-  public static OdkUserContext establishOdkUserContext(HttpServletRequest request, 
-      String appNameToUse, String usernameToUse, String passwordToUse) {
-    OdkUserContext ctxt;
-    // ctxt = new OdkUserContext("default", null, null, null, null, null);
-    
-    String appName  = (appNameToUse == null || appNameToUse.length() == 0) ? DEFAULT_APP_NAME : appNameToUse;
-    String username = (usernameToUse == null || usernameToUse.length() == 0) ? 
-        CommonToolProperties.ANONYMOUS_USER : usernameToUse;
-    String password = (passwordToUse == null || passwordToUse.length() == 0) ? "" : passwordToUse;
-
-    ctxt = new OdkUserContext(appName, username, password, RoleConsts.ANONYMOUS_ROLES_LIST, null, null);
     
     request.getServletContext().setAttribute(ATTRIBUTE_NAME, ctxt);
     ctxt.request = request;
