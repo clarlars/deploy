@@ -7,10 +7,12 @@
         <script type="text/javascript" src="../lib/jquery-3.2.1.js"></script>
         <script type="text/javascript" src="../lib/jquery-migrate-3.0.0.js"></script>
         <script type="text/javascript" src="../lib/spinner/waitMe.min.js"></script>
+        <script type="text/javascript" src="../lib/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/preview.js"></script>
         <link rel="stylesheet" type="text/css" href="../css/animate.css" />
         <link rel="stylesheet" type="text/css" href="../css/style.css" />
         <link rel="stylesheet" type="text/css" href="../lib/spinner/waitMe.min.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
     </head>
 
     <body class="absolute">
@@ -47,7 +49,11 @@
                     <tr><td class="configtextbold" id="cfgappname">blank</td></tr>
                     <tr><td>Active User:</td></tr>
                     <tr><td class="configtextbold" id="cfgactiveuser">blank</td></tr>
-                    <tr><td><button class="left-pane-button" name="updateParamsButton" id="updateParamsButton" onclick="updateParamsButton()" type="button">UpdateParams</button></td></tr>
+                    <tr><td><!--button class="left-pane-button" name="updateParamsButton" id="updateParamsButton"  
+                                data-toggle="modal" data-target="#myModalNorm" type="button">UpdateParams</button-->
+                        <button class="left-pane-button" name="updateParamsButton" id="updateParamsButton"  
+                                onclick="updateparamsbutton()" type="button">UpdateParams</button>
+                    </td></tr>
                 
                 </table><hr></td></tr>
                 <tr><td><button class="left-pane-button" name="loginButton" id="loginButton" onclick="loginButton()" type="button">Login to Server</button></td></tr>
@@ -57,6 +63,54 @@
         </div>
         <div class="flowcenter">
             <div class="fulliframearea" id="previewblandviewport"></div>
+            <!-- Div for the modal display for retrieving user information -->
+            <div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                Server Parameters
+                            </h4>
+                        </div>
+            
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="serverURL">Server URL</label>
+                                    <input type="url" class="form-control" id="serverURL" placeholder="Enter Server URL"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appName">Application Name</label>
+                                    <input type="text" class="form-control" id="appName" placeholder="Enter app name"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="userName">Username</label>
+                                    <input type="text" class="form-control" id="userName" placeholder="Enter username"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="userPassword">Password</label>
+                                    <input type="password" class="form-control" id="userPassword" placeholder="Enter password"/>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="allUnsecureAuth"/> Enable Insecure Authentication</label>
+                                </div>
+                            </form>
+                        </div>
+            
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="saveServerParameters" onclick="updateServerParams()">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <script type="text/javascript">
             $(initialLoadPage);

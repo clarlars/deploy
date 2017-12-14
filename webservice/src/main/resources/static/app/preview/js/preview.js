@@ -459,7 +459,17 @@ var isoLanguageNames = {
 	zu : "Zulu"
 };
 
-var odkCommonProperties = {};
+var odkCommonProperties = {
+    appName : "default",
+    activeUser : "anonymous",
+    rolesList : "",
+    defaultGroup : "",
+    usersList : "",
+    serverUrl : "https://opendatakit-tablesdemo.appspot.com",
+    useInsecureAuth : true,
+    //TBD: Should "common.auth_credentials" be stored here
+    // Or should I just assume what it is?
+};
 
 function getCountryName(countryCode) {
 	if (isoCountries.hasOwnProperty(countryCode)) {
@@ -588,6 +598,10 @@ function getAppName() {
 function getActiveUser() {
 	return odkCommonProperties.activeUser;
 }
+function useInsecureAuth() {
+    return odkCommonProperties.useInsecureAuth;
+}
+
 function getServerUrl() {
 	return odkCommonProperties.serverUrl;
 }
@@ -781,7 +795,42 @@ function closeAndPopPage() {
 		cw.location.reload(false);
 	}
 }
-function updateUserInformation() {
+function updateUserInformation(serverURLToUse, appNameToUse, userNameToUse, passwordToUse, authToUse) {
+	$('#previewblandviewport').waitMe({
+		effect : 'roundBounce',
+		text : 'Updating user information ...',
+		bg : 'rgba(255,255,255,0.7)',
+		color : '#000',
+		sizeW : '',
+		sizeH : ''
+	});
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/webservice/OdkCommonHostIf/common', false); // `false`
+																	// makes the
+																	// request
+																	// synchronous
+	xhr.setRequestHeader('X-OpenDataKit-Version', '2.0');
+	xhr.setRequestHeader('Accept', 'application/json;charset=utf-8');
+
+    var givenProps = {
+        appName : appNameToUse, 
+        activeUser : userNameToUse,
+        serverUrl : serverURLToUse,
+        password : passwordToUse,
+        useInsecureAuth : authToUse
+    };
+
+	xhr.send(JSON.stringify(givenProps));
+
+    // TBD: Make this dialog look better
+	if (xhr.status !== 200) {
+        alert("Error occurred during updateUserInformation");
+	} 
+	$('#previewblandviewport').waitMe('hide');
+}
+
+function getUserInformation() {
 	$('#previewblandviewport').waitMe({
 		effect : 'roundBounce',
 		text : 'Updating user information ...',
@@ -801,21 +850,19 @@ function updateUserInformation() {
 	xhr.send(null);
 
 	if (xhr.status === 200) {
-		odkCommonProperties = JSON.parse(xhr.responseText);
-	} else {
-		odkCommonProperties = {
-			appName : "default",
-			activeUser : "anonymous",
-			rolesList : "",
-			defaultGroup : "",
-			usersList : "",
-			serverUrl : "https://opendatakit-tablesdemo.appspot.com"
-		};
-	}
+		var retProp = JSON.parse(xhr.responseText);
+        for (var prop in odkCommonProperties) {
+            if (odkCommonProperties.hasOwnProperty(prop)) {
+                if (retProp.hasOwnProperty(prop)) {
+                    odkCommonProperties[prop] = retProp[prop];
+                }
+            }
+        }
+	} 
 	$('#previewblandviewport').waitMe('hide');
 }
 function initialLoadPage() {
-	updateUserInformation();
+	getUserInformation();
 	$("#cfgserverurl").html(getServerUrl());
 	$("#cfgappname").html(getAppName());
 	$("#cfgactiveuser").html(getActiveUser());
@@ -953,11 +1000,44 @@ function reinitbutton() {
 	xhr.send();
 }
 
-function updateParamsButton() {
-    updateUserInformation();
+function updateparamsbutton() {
+    // CAL: Launch a dialog to have users
+    // Enter serverUrl, username, password, appName
+    // as well as a checkbox for whether or not to use basic auth
+    // (TODO: appName opens the door up to storing 
+    //  multiple scratch directories if the user specifies another
+    //  app directory - for now I will avoid this and 
+    //  let them set it but they only get 1 directory!)
+    // Launch the bootstrap dialog
+    $('#serverURL').val(getServerUrl());
+    $('#appName').val(getAppName());
+    $('#userName').val(getActiveUser);
+    if (useInsecureAuth()) {
+        $('#allUnsecureAuth').attr('checked', true);
+    }
+
+    $('#myModalNorm').modal('show')                
+}
+
+function updateServerParams() {
+    // CAL: Launch a dialog to have users
+    // Enter serverUrl, username, password, appName
+    // as well as a checkbox for whether or not to use basic auth
+    // (TODO: appName opens the door up to storing 
+    //  multiple scratch directories if the user specifies another
+    //  app directory - for now I will avoid this and 
+    //  let them set it but they only get 1 directory!)
+    var dlgServerUrl =  $('#serverURL').val();
+    var dlgAppName = $('#appName').val();
+    var dlgUserName = $('#userName').val();
+    var dlgPassword = $('#userPassword').val();
+    var dlgInsecureAuth = "" + $('#allUnsecureAuth').is(':checked');
+    updateUserInformation(dlgServerUrl, dlgAppName, dlgUserName, dlgPassword, dlgInsecureAuth);
+    getUserInformation();
 	$("#cfgserverurl").html(getServerUrl());
 	$("#cfgappname").html(getAppName());
 	$("#cfgactiveuser").html(getActiveUser());
+    $('#myModalNorm').modal('hide');
 }
 
 function loginButton() {
@@ -978,16 +1058,8 @@ function loginButton() {
 		sizeH : ''
 	});
 
-	// resolve filename - asynchronous
-    var data = {};
-    data['username'] = 'sue';
-    data['password'] ='password';
-    data['appName'] = 'default';
-    data['scratchDir'] = '';
-    data['serverUrl'] = 'http://128.208.4.152';
-
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/webservice/OdkVerifySettingsFromAppServer', true);
+	xhr.open('GET', '/webservice/OdkVerifySettingsFromAppServer', true);
 	xhr.setRequestHeader('X-OpenDataKit-Version', '2.0');
 	xhr.setRequestHeader('Accept', 'application/json;charset=utf-8');
 	xhr.onload = function() {
@@ -997,7 +1069,7 @@ function loginButton() {
 		parent.innerHTML = "";
 		$('#previewblandviewport').waitMe('hide');
 	};
-	xhr.send(JSON.stringify(data));
+	xhr.send();
 }
 
 function syncbutton() {

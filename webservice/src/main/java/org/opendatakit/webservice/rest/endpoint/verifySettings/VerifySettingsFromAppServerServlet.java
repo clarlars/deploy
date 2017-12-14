@@ -51,43 +51,14 @@ public class VerifySettingsFromAppServerServlet extends HttpServlet{
 //    asyncContext.setTimeout(240000L);
 //  }
   
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     
-    StringBuffer buffer = new StringBuffer();
-    String line = null;
-    try {
-      BufferedReader reader = request.getReader();
-      while ((line = reader.readLine()) != null)
-        buffer.append(line);
-    } catch (Exception e) { 
-      e.printStackTrace();
-    }
-    
-    TypeReference<Map<String, String>> reference = new TypeReference<Map<String, String>>(){};
-    Map<String, String> verifyParams = ODKFileUtils.mapper.readValue(buffer.toString(), reference);
-    String username = verifyParams.get("username");
-    String password = verifyParams.get("password");
-    String appName = verifyParams.get("appName");
-    String serverUrl = verifyParams.get("serverUrl");
-    
-    // This should be used to make the Deploy more user friendly
-    String scratchDir = verifyParams.get("scratchDir");
-
-    // We want to replace this call with the appropriate calls to 
-    // get the properties instead
-    OdkUserContext.establishOdkUserContext(request, appName, username, password);
+    // TBD: Should we worry about the scratch directory??
+    // TBD: Deal with this "default" appName
+    OdkUserContext.establishOdkUserContext(request, "default");
     
     AsyncContext asyncContext = request.startAsync();
-    
-    OdkUserContext odkUserContext = OdkUserContext.getOdkUserContext(asyncContext);
-    PropertiesSingleton props = odkUserContext.getPropertiesSingleton();
-    
-    if (serverUrl != null && serverUrl.length() != 0) {
-      HashMap<String, String> serverUrlProperty = new HashMap<String, String>();
-      serverUrlProperty.put(CommonToolProperties.KEY_SYNC_SERVER_URL, serverUrl);
-      props.setProperties(serverUrlProperty);
-    }
     
     VerifySettingsFromAppServerAsyncListener action = new VerifySettingsFromAppServerAsyncListener(asyncContext);
     

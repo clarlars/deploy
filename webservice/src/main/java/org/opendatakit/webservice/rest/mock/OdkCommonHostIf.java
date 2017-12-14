@@ -12,13 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.Response;
 import org.opendatakit.consts.CharsetConsts;
+import org.opendatakit.database.RoleConsts;
 import org.opendatakit.logging.WebLogger;
 import org.opendatakit.properties.CommonToolProperties;
 import org.opendatakit.properties.PropertiesSingleton;
 import org.opendatakit.services.utilities.ODKServicesPropertyUtils;
 import org.opendatakit.utilities.ODKFileUtils;
+import org.opendatakit.webservice.configuration.OdkTool;
 import org.opendatakit.webservice.configuration.OdkUserContext;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import android.content.Context;
@@ -49,14 +52,79 @@ public class OdkCommonHostIf extends HttpServlet {
     super();
     // TODO Auto-generated constructor stub
   }
+  
+  /**
+   * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+   *      response)
+   */
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    
+    ObjectMapper mapper = new ObjectMapper();
+    TypeReference ref = new TypeReference<HashMap<String, Object>>() {};
+
+    HashMap<String, Object> requestParams = null;
+    try {
+      requestParams = mapper.readValue(request.getInputStream(), ref);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    String appName = (String) requestParams.get("appName");
+    String activeUser = (String) requestParams.get("activeUser");
+    String serverURL = (String) requestParams.get("serverUrl");
+    String useInsecureAuth = (String) requestParams.get("useInsecureAuth");
+    String password = (String) requestParams.get("password");
+    
+    OdkUserContext odkCtxt = OdkUserContext.establishOdkUserContext(request);
+    
+    PropertiesSingleton props;
+    
+    if (appName != null) {
+      props = CommonToolProperties.get(odkCtxt.getContext(), appName);
+    } else {
+      props = CommonToolProperties.get(odkCtxt.getContext(), "default");
+    }
+
+    Map<String,String> properties = new HashMap<String,String>();
+    
+    if ( activeUser != null  && !activeUser.equals(CommonToolProperties.ANONYMOUS_USER)) {
+      properties.put(CommonToolProperties.KEY_USERNAME, activeUser);
+      properties.put(CommonToolProperties.KEY_AUTHENTICATION_TYPE, props.CREDENTIAL_TYPE_USERNAME_PASSWORD);
+    } else {
+      // We assume you are anonymous
+      // TBD: Should we worry about putting gmail back in?
+      properties.put(CommonToolProperties.KEY_USERNAME, CommonToolProperties.ANONYMOUS_USER);
+      properties.put(CommonToolProperties.KEY_AUTHENTICATION_TYPE, props.CREDENTIAL_TYPE_NONE);
+    }
+    
+    if (serverURL != null) {
+      properties.put(CommonToolProperties.KEY_SYNC_SERVER_URL, serverURL);
+    }
+    
+    if (useInsecureAuth != null) {
+      properties.put(CommonToolProperties.KEY_ALLOW_NON_SECURE_AUTHENTICATION, useInsecureAuth);
+    }
+
+    if (password != null) {
+      properties.put(CommonToolProperties.KEY_PASSWORD, password);
+    }
+
+    props.setProperties(properties);
+    
+    response.setContentType("application/json");
+    response.setCharacterEncoding("utf-8");
+    response.setStatus(Response.SC_OK);
+  }
 
   /**
-   * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+   * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
    *      response)
    */
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-
+   
+    
     // We should figure this out from the url??
     OdkUserContext odkUserContext = OdkUserContext.establishOdkUserContext(request, "default");
 
@@ -80,11 +148,14 @@ public class OdkCommonHostIf extends HttpServlet {
     if (COMMON.equals(requestPart)) {
       Map<String,String> responseMap = new HashMap<String,String>();
       responseMap.put("appName", odkUserContext.getAppName());
-      responseMap.put("activeUser", ODKServicesPropertyUtils.getActiveUser(props));
+      // TBD: should we use ODKServicesPropertyUtils.getActiveUser()???
+      // Maybe both should be returned??
+      responseMap.put("activeUser", props.getProperty(CommonToolProperties.KEY_USERNAME));
       responseMap.put("rolesList", props.getProperty(CommonToolProperties.KEY_ROLES_LIST));
       responseMap.put("defaultGroup", props.getProperty(CommonToolProperties.KEY_DEFAULT_GROUP));
       responseMap.put("usersList", props.getProperty(CommonToolProperties.KEY_USERS_LIST));
       responseMap.put("serverUrl", props.getProperty(CommonToolProperties.KEY_SYNC_SERVER_URL));
+      responseMap.put("useInsecureAuth", props.getProperty(CommonToolProperties.KEY_ALLOW_NON_SECURE_AUTHENTICATION));
       responseString = ODKFileUtils.mapper.writeValueAsString(responseMap);
     } else if (PROPERTY.equals(requestName)) {
       if ( parts.length != 2) {

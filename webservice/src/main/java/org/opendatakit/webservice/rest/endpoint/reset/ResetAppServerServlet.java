@@ -37,7 +37,8 @@ public class ResetAppServerServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    OdkUserContext.establishOdkUserContext(request);
+    // TBD: Deal with "default" appName
+    OdkUserContext.establishOdkUserContext(request, "default");
 
     AsyncContext asyncCtx = request.startAsync();
 
