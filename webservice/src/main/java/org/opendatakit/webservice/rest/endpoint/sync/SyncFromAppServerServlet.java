@@ -82,6 +82,7 @@ public class SyncFromAppServerServlet extends HttpServlet {
     ObjectMapper mapper = new ObjectMapper();
 
     String requestUrl = request.getRequestURL().toString();
+    String queryString = request.getQueryString();
     int idx = requestUrl.indexOf(END_KNOWN_PATH_PART);
     if (idx == -1) {
       response.sendError(Response.SC_BAD_REQUEST);
@@ -92,31 +93,23 @@ public class SyncFromAppServerServlet extends HttpServlet {
     final Context appContext = odkUserContext.getContext();
 
     String responseString;
-    String requestPart = requestUrl.substring(idx + END_KNOWN_PATH_PART.length());
-    String[] parts = requestPart.split("=");
+    String[] parts = queryString.split("uuid=");
     String syncId = null;
     
     if (parts.length >= 2) {
       syncId = parts[1];
     }
 
-//    if (syncId != null && listOfNotificationManagers.containsKey(syncId)) {
-//      responseString = getNotifcationStatusForId(syncId);
-//    } else {
-      if (listOfNotificationManagers.size() > 0) {
-        System.out.println("CLARICE: More than 1 notification manager");
-        Set<String> ids =  listOfNotificationManagers.keySet();
-        Iterator<String> idIter = ids.iterator();
-        String idToUse = idIter.next();
-        responseString = getNotifcationStatusForId(idToUse);
-      } else {
-        response.sendError(Response.SC_NOT_FOUND);
-        return;
-      }
-//    }
+    if (syncId != null && listOfNotificationManagers.containsKey(syncId)) {
+      responseString = getNotifcationStatusForId(syncId);
+      System.out.println("CLARICE: Notification manager found syncId:" + syncId + " response:" + responseString);
+    } else {
+      response.sendError(Response.SC_NOT_FOUND);
+      return;
+    }
 
     try {
-      response.setContentType("application/json");
+      response.setContentType("text/html");
       response.setCharacterEncoding("utf-8");
       response.getOutputStream().write(responseString.getBytes(CharsetConsts.UTF_8));
       response.setStatus(Response.SC_OK);
