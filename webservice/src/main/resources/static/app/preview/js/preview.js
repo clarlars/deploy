@@ -1092,7 +1092,7 @@ function syncbutton() {
 
 	// resolve filename - asynchronous
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/webservice/OdkSyncFromAppServer', true);
+	xhr.open('POST', '/webservice/OdkSyncFromAppServer', false);
 	xhr.setRequestHeader('X-OpenDataKit-Version', '2.0');
 	xhr.setRequestHeader('Accept', 'application/json;charset=utf-8');
 	xhr.onload = function() {
@@ -1104,7 +1104,33 @@ function syncbutton() {
 		initialLoadPage();
 	};
 	xhr.send();
+
+    if (xhr.status === 200) {
+        console.log("Got 200 response");
+        var syncJSONUUID = JSON.parse(xhr.responseText);
+        var syncUUID = syncJSONUUID["uuid"];
+        syncStatusPoll(syncUUID);
+    }
 }
+function syncStatusPoll(uuid) {
+	// resolve filename - asynchronous
+    setTimeout(function() {
+        var xhr = new XMLHttpRequest();
+        // TODO: Clean this up!
+        var url = '/webservice/OdkSyncFromAppServer?uuid=' + encodeURIComponent(uuid);
+        xhr.open('GET', url, false);
+        xhr.setRequestHeader('X-OpenDataKit-Version', '2.0');
+        xhr.setRequestHeader('Accept', 'application/json;charset=utf-8');
+        xhr.send();
+
+        if (xhr.status !== 200) {
+            syncStatusPoll(uuid);
+            // TODO: handle errors
+            alert("Got 200 Sync status: " + this.responseText);
+        }
+    }, 1000);
+}
+
 function resetserverbutton() {
 	// abort all nested windows
 

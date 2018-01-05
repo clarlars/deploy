@@ -16,6 +16,7 @@ public class WebserviceApplication {
   private static final String JAR_COLON = "jar:";
 
   public static void main(String[] args) {
+    // TODO: Launch  UI here before to ask for scratch directory
     boolean hasDataDir = (System.getProperty("data.dir") != null);
     if ( hasDataDir ) {
       // user has invoked the jar and supplied a data.dir value -- use it.

@@ -1,6 +1,9 @@
 package org.opendatakit.webservice.rest.endpoint.sync;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -64,7 +67,7 @@ public class SyncFromAppServerAsyncListener implements AsyncListener {
     asyncContext.complete();
   }
 
-  SyncFromAppServerAsyncListener(AsyncContext asyncContext) {
+  SyncFromAppServerAsyncListener(AsyncContext asyncContext, Map<String, DesktopSyncNotificationManagerImpl> notificationMgrMap) {
     this.asyncContext = asyncContext;
 
     asyncContext.start(new Runnable() {
@@ -86,8 +89,12 @@ public class SyncFromAppServerAsyncListener implements AsyncListener {
 
         final Context appContext = odkUserContext.getContext();
 
-        final GlobalSyncNotificationManagerImpl notificationManager = new GlobalSyncNotificationManagerImpl(
+        // Generate a unique id and keep track of the DesktopSyncNotificationManagerImpl
+        String uuid = UUID.randomUUID().toString();
+        final DesktopSyncNotificationManagerImpl notificationManager = new DesktopSyncNotificationManagerImpl(
             appContext);
+        
+        notificationMgrMap.put(uuid, notificationManager);
         AndroidConnectFactory.configure();
         final UserDbInterface impl = new UserDbInterfaceImpl(
             new OdkDatabaseServiceImpl(appContext));
@@ -100,9 +107,27 @@ public class SyncFromAppServerAsyncListener implements AsyncListener {
         // behavior, at which we should probably go to 3.0
         // on the tools.
         AppSynchronizer sync = new AppSynchronizer(appContext, "214", appName, notificationManager);
+        
+
+        try {
+          String responseJSON = "{\"uuid\":\"" + uuid + "\"}";
+          response.setContentType("application/json");
+          response.setCharacterEncoding("utf-8");
+          response.getOutputStream().write(responseJSON.getBytes(CharsetConsts.UTF_8));
+          response.setStatus(Response.SC_OK);
+        } catch (IOException e) {
+          WebLogger.getLogger(appName).e(TAG, "SyncFromAppServerAsyncListener");
+          WebLogger.getLogger(appName).printStackTrace(e);
+          try {
+            response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
+          } catch (IOException ex) {
+            WebLogger.getLogger(appName).printStackTrace(ex);
+          }
+        }
 
         try {
           sync.directSynchronize(false, SyncAttachmentState.SYNC);
+          //notificationMgrMap.remove(uuid);
         } catch (Throwable t) {
           WebLogger.getLogger(appName).e(TAG, "error during sync");
           WebLogger.getLogger(appName).printStackTrace(t);
@@ -151,22 +176,8 @@ public class SyncFromAppServerAsyncListener implements AsyncListener {
 
         InitializationOutcome pendingOutcome = util.initialize();
 
-        try {
-          String responseJSON = "{\"success\":\"Sync'd\"}";
-          response.setContentType("application/json");
-          response.setCharacterEncoding("utf-8");
-          response.getOutputStream().write(responseJSON.getBytes(CharsetConsts.UTF_8));
-          response.setStatus(Response.SC_OK);
-        } catch (IOException e) {
-          WebLogger.getLogger(appName).e(TAG, "SyncFromAppServerAsyncListener");
-          WebLogger.getLogger(appName).printStackTrace(e);
-          try {
-            response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
-          } catch (IOException ex) {
-            WebLogger.getLogger(appName).printStackTrace(ex);
-          }
-        }
         // complete the processing
+        //TODO: Move this one??
         asyncContext.complete();
       }
     });

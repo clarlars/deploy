@@ -177,7 +177,7 @@ public class OdkCommonHostIf extends HttpServlet {
       response.getOutputStream().write(responseString.getBytes(CharsetConsts.UTF_8));
       response.setStatus(Response.SC_OK);
     } catch (IOException e) {
-      WebLogger.getLogger(odkUserContext.getAppName()).e(OdkCommonHostIf.TAG, e.toString());
+      WebLogger.getLogger(odkUserContext.getAppName()).e(TAG, e.toString());
       WebLogger.getLogger(odkUserContext.getAppName()).printStackTrace(e);
       response.sendError(Response.SC_INTERNAL_SERVER_ERROR, e.toString());
     }
